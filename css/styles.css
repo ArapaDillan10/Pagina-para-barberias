@@ -1,0 +1,649 @@
+/* ─── RESET Y ESTILOS GLOBALES ─── */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background-color: #060B18;
+  color: #F9FAFB;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+h1, h2, h3, h4, .mono {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* ─── CONTENEDORES Y SECCIONES ─── */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 4rem 1.5rem;
+}
+
+.section-dark {
+  background-color: #060B18;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 4rem 1.5rem;
+}
+
+.section-card {
+  background-color: #0B132B;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.section-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #0055FF;
+  border: 1px solid rgba(0, 85, 255, 0.3);
+  background: rgba(0, 85, 255, 0.08);
+  padding: 0.2rem 0.6rem;
+  display: inline-block;
+  margin-bottom: 1rem;
+  border-radius: 2px;
+}
+
+.text-subtle {
+  color: #9CA3AF;
+  max-width: 600px;
+  margin-top: 0.5rem;
+}
+
+/* ─── NAVBAR ─── */
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background-color: rgba(6, 11, 24, 0.95);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 1rem 1.5rem;
+}
+
+.nav-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-decoration: none;
+  color: #F9FAFB;
+}
+
+.brand-icon {
+  background: #E63946;
+  color: #fff;
+  padding: 0.3rem 0.6rem;
+  font-weight: bold;
+  border-radius: 2px;
+  font-size: 0.9rem;
+}
+
+.brand-name {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  font-size: 1.1rem;
+  display: block;
+  line-height: 1;
+}
+
+.brand-sub {
+  font-size: 0.55rem;
+  letter-spacing: 0.15em;
+  color: #9CA3AF;
+}
+
+.nav-links {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.nav-links a {
+  color: #9CA3AF;
+  text-decoration: none;
+  font-size: 0.75rem;
+  font-family: 'JetBrains Mono', monospace;
+  transition: color 0.15s ease;
+}
+
+.nav-links a:hover {
+  color: #FFFFFF;
+}
+
+/* ─── BOTONES ─── */
+.btn-blue {
+  background-color: #0055FF;
+  color: #FFFFFF;
+  border: 1px solid #0055FF;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  transition: all 0.15s ease-in-out;
+}
+
+.btn-blue:hover {
+  background-color: #0044CC;
+  border-color: #0044CC;
+}
+
+.btn-admin {
+  background: #0055FF;
+  color: #fff;
+  border: none;
+  padding: 0.5rem 1rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  border-radius: 3px;
+}
+
+.btn-ghost {
+  background-color: transparent;
+  color: #F9FAFB;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  transition: all 0.15s ease-in-out;
+}
+
+.btn-ghost:hover {
+  border-color: #0055FF;
+  color: #0055FF;
+}
+
+.btn-ghost-sm {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #9CA3AF;
+  padding: 0.5rem 1rem;
+  font-size: 0.75rem;
+  font-family: 'JetBrains Mono', monospace;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+/* ─── HERO (DIVIDIDO FIGMA) ─── */
+.hero-section {
+  min-height: calc(100vh - 70px);
+  background-color: #060B18;
+}
+
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: calc(100vh - 70px);
+}
+
+.hero-left {
+  padding: 4rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  color: #E63946;
+  border: 1px solid rgba(230, 57, 70, 0.3);
+  background: rgba(230, 57, 70, 0.08);
+  padding: 0.3rem 0.8rem;
+  display: inline-block;
+  width: fit-content;
+  margin-bottom: 2rem;
+}
+
+.hero-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: clamp(2.2rem, 4vw, 3.5rem);
+  font-weight: 700;
+  line-height: 1.1;
+  margin-bottom: 1.5rem;
+}
+
+.highlight {
+  color: #E63946;
+}
+
+.hero-description {
+  color: #9CA3AF;
+  font-size: 1rem;
+  max-width: 480px;
+  margin-bottom: 2.5rem;
+}
+
+.hero-buttons {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 3.5rem;
+}
+
+.btn-primary {
+  background: #E63946;
+  color: #fff;
+  text-decoration: none;
+  padding: 0.9rem 2rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  font-weight: 700;
+  border-radius: 2px;
+  display: inline-block;
+}
+
+.btn-secondary {
+  background: transparent;
+  color: #fff;
+  text-decoration: none;
+  padding: 0.9rem 2rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 2px;
+  display: inline-block;
+}
+
+.hero-stats {
+  display: flex;
+  gap: 2.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 2rem;
+}
+
+.stat-number {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.5rem;
+  font-weight: 700;
+  display: block;
+}
+
+.stat-label {
+  font-size: 0.65rem;
+  color: #6B7280;
+  letter-spacing: 0.1em;
+}
+
+.hero-right {
+  background-image: url('https://images.unsplash.com/photo-1503951914875-452162b0f3f1?q=80&w=1000&auto=format&fit=crop');
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  min-height: 300px;
+}
+
+.image-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to right, #060B18 0%, transparent 40%);
+}
+
+/* ─── GRILLAS Y TARJETAS ─── */
+.grid-services, .grid-products, .grid-staff, .reviews-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.card-service, .card-product, .card-staff, .review-card {
+  background-color: #0B132B;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 1.5rem;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.card-service h3, .card-product h3 {
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.card-service p, .card-product p {
+  color: #9CA3AF;
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+}
+
+.price {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #0055FF;
+  display: block;
+  margin-bottom: 1rem;
+}
+
+/* ─── GALERÍA ─── */
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.gallery-card {
+  background-color: #0B132B;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 2rem 1rem;
+  border-radius: 6px;
+  text-align: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.9rem;
+  color: #9CA3AF;
+}
+
+/* ─── FORMULARIOS ─── */
+.booking-form, .contact-form {
+  max-width: 500px;
+  margin-top: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.wireframe-input {
+  background-color: #060B18;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 0.75rem 1rem;
+  color: #F9FAFB;
+  border-radius: 4px;
+  font-family: inherit;
+  width: 100%;
+}
+
+.wireframe-input:focus {
+  outline: none;
+  border-color: #0055FF;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.form-group label {
+  font-size: 0.75rem;
+  font-family: 'JetBrains Mono', monospace;
+  color: #9CA3AF;
+}
+
+/* ─── STEPPER DE RESERVAS ─── */
+.text-center { text-align: center; }
+
+.stepper-title {
+  font-size: 2.2rem;
+  font-weight: 700;
+  margin-bottom: 0.2rem;
+}
+
+.stepper-sub {
+  color: #9CA3AF;
+  font-size: 0.85rem;
+  margin-bottom: 2rem;
+}
+
+.stepper-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  max-width: 500px;
+  margin: 0 auto 2rem auto;
+}
+
+.step-indicator {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #0B132B;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  color: #9CA3AF;
+  transition: all 0.3s ease;
+}
+
+.step-indicator.active {
+  background: #E63946;
+  border-color: #E63946;
+  color: #fff;
+  box-shadow: 0 0 10px rgba(230, 57, 70, 0.5);
+}
+
+.step-indicator.completed {
+  background: #0055FF;
+  border-color: #0055FF;
+  color: #fff;
+}
+
+.step-line {
+  flex: 1;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.booking-card {
+  background-color: #0B132B;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2.5rem;
+  text-align: left;
+}
+
+.step-content { display: none; }
+.step-content.active { display: block; }
+
+.step-hint {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  color: #9CA3AF;
+  letter-spacing: 0.15em;
+  display: block;
+  margin-bottom: 1.5rem;
+}
+
+.barbers-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.barber-card {
+  background: #060B18;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  padding: 1.5rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.barber-card:hover {
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.barber-card.selected {
+  border-color: #E63946;
+  background: rgba(230, 57, 70, 0.05);
+  box-shadow: 0 0 15px rgba(230, 57, 70, 0.2);
+}
+
+.barber-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem auto;
+  font-size: 1.2rem;
+}
+
+.step-actions { display: flex; margin-top: 2rem; }
+.flex-end { justify-content: flex-end; }
+.flex-between { justify-content: space-between; align-items: center; }
+
+.btn-red {
+  background: #E63946;
+  color: #fff;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  font-weight: 700;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.calendar-hours-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-bottom: 1.5rem;
+}
+
+.calendar-box, .hours-box {
+  background: #060B18;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 1.2rem;
+  border-radius: 6px;
+}
+
+.month-title, .hours-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  color: #9CA3AF;
+  display: block;
+  margin-bottom: 1rem;
+}
+
+.calendar-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.4rem;
+  text-align: center;
+  font-size: 0.75rem;
+}
+
+.calendar-days span { padding: 0.4rem 0; color: #9CA3AF; }
+.calendar-days .day { cursor: pointer; border-radius: 3px; color: #fff; }
+.calendar-days .day:hover { background: rgba(255, 255, 255, 0.1); }
+.calendar-days .day.selected { background: #E63946; color: #fff; font-weight: bold; }
+
+.hours-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.6rem;
+}
+
+.time-slot {
+  background: #0B132B;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #fff;
+  padding: 0.6rem 0.2rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.time-slot.selected {
+  background: #E63946;
+  border-color: #E63946;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.margin-top { margin-top: 1rem; }
+
+.summary-badge {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px dashed rgba(255, 255, 255, 0.15);
+  padding: 0.8rem;
+  border-radius: 4px;
+  margin-top: 1.5rem;
+  display: flex;
+  gap: 1.5rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: #9CA3AF;
+}
+
+/* ─── FOOTER & RESPONSIVE ─── */
+.footer {
+  background-color: #040710;
+  padding: 2rem 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.footer-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.8rem;
+  color: #9CA3AF;
+}
+
+@media (max-width: 768px) {
+  .hero-grid {
+    grid-template-columns: 1fr;
+    min-height: auto;
+  }
+  .hero-left {
+    padding: 2.5rem 1.5rem;
+  }
+  .hero-right {
+    height: 300px;
+  }
+  .image-overlay {
+    background: linear-gradient(to top, #060B18 0%, transparent 50%);
+  }
+  .barbers-grid, .calendar-hours-grid, .form-row {
+    grid-template-columns: 1fr;
+  }
+  .nav-links { display: none; }
+  .footer-content { flex-direction: column; gap: 1rem; text-align: center; }
+}

@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DKBZA Barber Studio | Estilo & Precisión</title>
+  <link rel="stylesheet" href="./css/styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- 1. NAVBAR -->
+  <header class="navbar">
+    <div class="nav-container">
+      <a href="#hero" class="brand">
+        <span class="brand-icon">💈</span>
+        <div>
+          <span class="brand-name">DKBZA</span>
+          <span class="brand-sub">BARBER STUDIO</span>
+        </div>
+      </a>
+      <nav class="nav-links">
+        <a href="#nosotros">Nosotros</a>
+        <a href="#servicios">Servicios</a>
+        <a href="#staff">Staff</a>
+        <a href="#galeria">Galería</a>
+        <a href="#reservas">Reservas</a>
+        <a href="#resenas">Reseñas</a>
+        <a href="#tienda">Tienda</a>
+        <a href="#contacto">Contacto</a>
+      </nav>
+      <a href="#reservas" class="btn-blue nav-btn">Reservar Turno</a>
+    </div>
+  </header>
+
+  <!-- 2. HERO -->
+  <section class="hero-section">
+  <div class="hero-grid">
+    <div class="hero-left">
+      <span class="badge">SALTA CAPITAL - ARGENTINA</span>
+      <h1 class="hero-title">ESTILO Y PRECISIÓN EN <span class="highlight">CADA CORTE</span></h1>
+      <p class="hero-description">Elevamos el arte de la barbería tradicional con técnicas modernas y un ambiente exclusivo.</p>
+      <div class="hero-buttons">
+        <a href="#reservas" class="btn-primary">RESERVAR CITA</a>
+        <a href="#servicios" class="btn-secondary">VER SERVICIOS</a>
+      </div>
+    </div>
+    <div class="hero-right">
+      <div class="image-overlay"></div>
+    </div>
+  </div>
+</section>
+
+  <!-- 3. NOSOTROS -->
+  <section id="nosotros" class="section-dark">
+    <div class="container">
+      <span class="section-tag">NUESTRA HISTORIA</span>
+      <h2>Más que una barbería,<br>una experiencia</h2>
+      <p class="text-subtle">Fundada en 2019, DKBZA nació con el objetivo de redefinir el cuidado masculino en Salta, ofreciendo atención personalizada y detallista.</p>
+    </div>
+  </section>
+
+  <!-- 4. SERVICIOS -->
+  <section id="servicios" class="section-card">
+    <div class="container">
+      <span class="section-tag">MENÚ DE SERVICIOS</span>
+      <h2>Cortes & Estilo</h2>
+      <div class="grid-services">
+        <div class="card-service">
+          <h3>Corte Clasico / Fade</h3>
+          <p>Asesoramiento de imagen, lavado y peinado final.</p>
+          <span class="price">$12.000</span>
+        </div>
+        <div class="card-service">
+          <h3>Barba Completa / Ritual</h3>
+          <p>Toalla caliente, perfilado con navaja y aceites esenciales.</p>
+          <span class="price">$8.500</span>
+        </div>
+        <div class="card-service">
+          <h3>Combo DKBZA (Corte + Barba)</h3>
+          <p>Servicio completo VIP con bebida de cortesía.</p>
+          <span class="price">$18.000</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. STAFF -->
+  <section id="staff" class="section-dark">
+    <div class="container">
+      <span class="section-tag">EQUIPO PROFESIONAL</span>
+      <h2>Nuestros Barberos</h2>
+      <div class="grid-staff">
+        <div class="card-staff">
+          <div class="avatar-placeholder">DK</div>
+          <h3>Dillan Arapa</h3>
+          <p>Master Barber & Founder</p>
+        </div>
+        <div class="card-staff">
+          <div class="avatar-placeholder">MB</div>
+          <h3>Mateo Nieva</h3>
+          <p>Fade Specialist & Senior</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. GALERÍA -->
+  <section id="galeria" class="section-card">
+    <div class="container">
+      <span class="section-tag">WORK & STYLES</span>
+      <h2>Galería de Trabajos</h2>
+     <div class="gallery-grid">
+        <div class="gallery-card">Corte 1</div>
+        <div class="gallery-card">Corte 2</div>
+        <div class="gallery-card">Corte 3</div>
+        <div class="gallery-card">Corte 4</div>
+     </div>
+    </div>
+  </section>
+<!-- 7. RESERVAS (STEPPER EN 3 PASOS) -->
+  <section id="reservas" class="section-dark">
+    <div class="container text-center">
+      <h2 class="stepper-title">Reservá tu turno</h2>
+      <p class="stepper-sub">3 pasos · Confirmación inmediata por WhatsApp</p>
+
+      <!-- Indicador de pasos -->
+      <div class="stepper-header">
+        <div class="step-indicator active" id="step-dot-1">1</div>
+        <div class="step-line"></div>
+        <div class="step-indicator" id="step-dot-2">2</div>
+        <div class="step-line"></div>
+        <div class="step-indicator" id="step-dot-3">3</div>
+        <div class="step-labels">
+          <span class="active" id="step-lbl-1">BARBERO</span>
+          <span id="step-lbl-2">FECHA & HORA</span>
+          <span id="step-lbl-3">TUS DATOS</span>
+        </div>
+      </div>
+
+      <!-- Contenedor del Stepper -->
+      <div class="booking-card">
+
+        <!-- PASO 1: SELECCIONAR BARBERO -->
+        <div class="step-content active" id="step-1">
+          <span class="step-hint">SELECCIONÁ TU BARBERO</span>
+          <div class="barbers-grid">
+            <div class="barber-card" data-barber="Ezequiel">
+              <div class="barber-avatar">✂</div>
+              <h3>Ezequiel</h3>
+              <p>Head Barber</p>
+            </div>
+            <div class="barber-card selected" data-barber="Mateo">
+              <div class="barber-avatar">✂</div>
+              <h3>Mateo</h3>
+              <p>Senior Barber</p>
+            </div>
+            <div class="barber-card" data-barber="Tomás">
+              <div class="barber-avatar">✂</div>
+              <h3>Tomás</h3>
+              <p>Barber</p>
+            </div>
+          </div>
+          <div class="step-actions flex-end">
+            <button type="button" class="btn-blue" id="btn-next-1">CONTINUAR →</button>
+          </div>
+        </div>
+
+        <!-- PASO 2: FECHA Y HORA -->
+        <div class="step-content" id="step-2">
+          <div class="calendar-hours-grid">
+            <!-- Calendario Mock -->
+            <div class="calendar-box">
+              <span class="month-title">SEPTIEMBRE 2026</span>
+              <div class="calendar-days">
+                <span>D</span><span>L</span><span>M</span><span>X</span><span>J</span><span>V</span><span>S</span>
+                <span class="empty"></span><span class="empty"></span><span class="day">1</span><span class="day">2</span><span class="day">3</span><span class="day">4</span><span class="day">5</span>
+                <span class="day">6</span><span class="day">7</span><span class="day">8</span><span class="day">9</span><span class="day">10</span><span class="day">11</span><span class="day">12</span>
+                <span class="day">13</span><span class="day">14</span><span class="day">15</span><span class="day">16</span><span class="day">17</span><span class="day">18</span><span class="day">19</span>
+                <span class="day">20</span><span class="day">21</span><span class="day">22</span><span class="day selected">23</span><span class="day">24</span><span class="day">25</span><span class="day">26</span>
+                <span class="day">27</span><span class="day">28</span><span class="day">29</span><span class="day">30</span>
+              </div>
+            </div>
+
+            <!-- Horarios -->
+            <div class="hours-box">
+              <span class="hours-title">HORARIOS DISPONIBLES</span>
+              <div class="hours-grid">
+                <button type="button" class="time-slot selected">09:00h</button>
+                <button type="button" class="time-slot">10:00h</button>
+                <button type="button" class="time-slot">11:00h</button>
+                <button type="button" class="time-slot">12:00h</button>
+                <button type="button" class="time-slot">14:00h</button>
+                <button type="button" class="time-slot">15:00h</button>
+                <button type="button" class="time-slot">16:00h</button>
+                <button type="button" class="time-slot">17:00h</button>
+                <button type="button" class="time-slot">18:00h</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="step-actions flex-between">
+            <button type="button" class="btn-ghost-sm" id="btn-back-2">← VOLVER</button>
+            <button type="button" class="btn-blue" id="btn-next-2">CONTINUAR →</button>
+          </div>
+        </div>
+
+        <!-- PASO 3: TUS DATOS -->
+        <div class="step-content" id="step-3">
+          <form id="final-booking-form">
+            <div class="form-row">
+              <div class="form-group">
+                <label>NOMBRE *</label>
+                <input type="text" id="booking-name" class="wireframe-input" placeholder="Ej: Juan García" required />
+              </div>
+              <div class="form-group">
+                <label>WHATSAPP *</label>
+                <input type="tel" id="booking-phone" class="wireframe-input" placeholder="+54 9 11 0000-0000" required />
+              </div>
+            </div>
+
+            <div class="form-group margin-top">
+              <label>SERVICIO (OPCIONAL)</label>
+              <select id="booking-service" class="wireframe-input">
+                <option value="">Seleccioná un servicio...</option>
+                <option value="Corte Clásico">Corte Clásico / Fade ($12.000)</option>
+                <option value="Barba Completa">Barba Completa / Ritual ($8.500)</option>
+                <option value="Combo DKBZA">Combo DKBZA ($18.000)</option>
+              </select>
+            </div>
+
+            <!-- Resumen de selección -->
+            <div class="summary-badge">
+              <span id="summary-barber">✂ Mateo - Senior</span>
+              <span id="summary-date">📅 Septiembre 23</span>
+              <span id="summary-time">⏰ 09:00h</span>
+            </div>
+
+            <div class="step-actions flex-between margin-top">
+              <button type="button" class="btn-ghost-sm" id="btn-back-3">← VOLVER</button>
+              <button type="submit" class="btn-red">CONFIRMAR RESERVA ✓</button>
+            </div>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </section>
+  
+  <!-- 8. RESEÑAS -->
+  <section id="resenas" class="section-card">
+    <div class="container">
+      <span class="section-tag">FEEDBACK DE CLIENTES</span>
+      <h2>Lo que dicen de DKBZA</h2>
+      <div class="reviews-grid">
+        <div class="review-card">
+          <p>"La mejor atención de Palermo. La toalla caliente en la barba es de otro nivel."</p>
+          <span class="review-author">- Gonzalo M.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9. TIENDA -->
+  <section id="tienda" class="section-dark">
+    <div class="container">
+      <div class="shop-header">
+        <div>
+          <span class="section-tag">TIENDA ONLINE</span>
+          <h2>Productos para el hogar</h2>
+        </div>
+        <div id="cart-counter" class="cart-counter hidden">
+          🛒 <span id="cart-count">0</span> productos
+        </div>
+      </div>
+      <div class="grid-products">
+        <div class="card-product">
+          <h3>Pomada Mate Premium</h3>
+          <p>Fijación fuerte y acabado natural.</p>
+          <span class="price">$14.500</span>
+          <button class="btn-blue add-to-cart-btn" data-product="Pomada Mate Premium">Agregar al carrito</button>
+        </div>
+        <div class="card-product">
+          <h3>Óleo para Barba 30ml</h3>
+          <p>Hidratación profunda con aroma amaderado.</p>
+          <span class="price">$11.200</span>
+          <button class="btn-blue add-to-cart-btn" data-product="Óleo para Barba">Agregar al carrito</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 10. CONTACTO -->
+  <section id="contacto" class="section-card">
+    <div class="container grid-contact">
+      <div>
+        <span class="section-tag">UBICACIÓN Y CONTACTO</span>
+        <h2>Encontranos en Salta</h2>
+        <p class="text-subtle">calle siempre viva 123</p>
+        <p class="text-subtle">Tel: +54 387 1111 111</p>
+      </div>
+      <form id="contact-form" class="contact-form">
+        <label>Nombre</label>
+        <input type="text" class="wireframe-input" required />
+        <label>Email</label>
+        <input type="email" class="wireframe-input" required />
+        <label>Mensaje</label>
+        <textarea class="wireframe-input" rows="4" required></textarea>
+        <button type="submit" class="btn-blue">Enviar Mensaje</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container footer-content">
+      <span>© 2026 DKBZA Barber Studio · Todos los derechos reservados</span>
+      <button id="admin-login-btn" class="btn-ghost-sm">🔒 Admin</button>
+    </div>
+  </footer>
+
+  <script src="./js/script.js"></script>
+</body>
+</html>
