@@ -48,3 +48,8 @@ Git & GitHub: Control de versiones.
 [ ] Diseño de Base de Datos / Backend: Estructurar las entidades (Clientes, Barberos, Turnos y Servicios) para almacenamiento persistente.
 
 [ ] Levantar página, via vercel.
+
+accede a mi pagina aqui;
+
+https://www.figma.com/make/Oa6Kg84rj2VwZ5zH7AlGY3/Wireframe-para-DKBZA-Barber-Studio?code-node-id=0-6&p=f&t=jqAcGAZXls4roFSp-0&fullscreen=1
+
