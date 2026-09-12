@@ -53,17 +53,3 @@ accede a mi pagina aqui;
 
 https://www.figma.com/make/Oa6Kg84rj2VwZ5zH7AlGY3/Wireframe-para-DKBZA-Barber-Studio?code-node-id=0-6&p=f&t=jqAcGAZXls4roFSp-0&fullscreen=1
 
-## 🎨 Mockups del Sitio Web (Figma)
-
-Acá se muestran los mockups de las 12 secciones diseñadas en Figma:
-
-![Hero Principal](./img/foto1.png)
-![Sección Servicios](./img/foto2.png)
-![Sección Equipo](./img/foto3.png)
-![Galería](./img/foto4.png)
-![Tienda](./img/foto5.png)
-![Ubicación](./img/foto6.png)
-![Testimonios](./img/foto7.png)
-![Preguntas Frecuentes](./img/foto8.png)
-![Turnos](./img/foto9.png)
-![Footer](./img/foto10.png)
