@@ -1075,3 +1075,11 @@ h1, h2, h3, h4, .mono {
 .card-product .add-to-cart-btn {
   margin-top: auto;
 }
+/* MENÚ ACTIVO */
+
+.nav-links a.active {
+  color: #3b82f6;
+  font-weight: 600;
+  border-bottom: 2px solid #3b82f6;
+  padding-bottom: 4px;
+}
