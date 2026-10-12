@@ -1,30 +1,7 @@
-<!DOCTYPE html>
-<html lang="es">
-
-<head>
-
-  <meta charset="UTF-8">
-
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>DKBZA | Panel de Administración</title>
-
-  <!-- MISMO CSS DE TODA LA WEB -->
-  <link rel="stylesheet" href="./css/styles.css">
-
-  <!-- FUENTES -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap"
-    rel="stylesheet">
-
-</head>
-
-
-<body>
-
+<?php
+  $titulo_pagina = 'DKBZA | Panel de Administración';
+  include('includes/header.php');
+?>
 
   <!-- =========================================================
        NAVBAR DEL ADMIN
@@ -36,7 +13,7 @@
 
       <!-- LOGO -->
 
-      <a href="index.html" class="brand">
+      <a href="index.php" class="brand">
 
         <span class="brand-icon">💈</span>
 
@@ -57,7 +34,7 @@
 
       <!-- VOLVER A LA WEB -->
 
-      <a href="index.html" class="btn-ghost-sm">
+      <a href="index.php" class="btn-ghost-sm">
         ← Volver al sitio
       </a>
 
@@ -649,7 +626,7 @@
         © 2026 DKBZA Barber Studio · Panel de Administración
       </span>
 
-      <a href="index.html" class="btn-ghost-sm">
+      <a href="index.php" class="btn-ghost-sm">
         ← Volver al sitio
       </a>
 

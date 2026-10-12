@@ -1,76 +1,8 @@
-<!DOCTYPE html>
-<html lang="es">
-
-<head>
-
-  <meta charset="UTF-8">
-
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>DKBZA Barber Studio | Reservas</title>
-
-  <!-- MISMO CSS -->
-  <link rel="stylesheet" href="./css/styles.css">
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-
-</head>
-
-<body>
-
-
-  <!-- =========================================================
-       NAVBAR
-  ========================================================== -->
-
-  <header class="navbar">
-
-    <div class="nav-container">
-
-      <a href="index.html" class="brand">
-
-        <span class="brand-icon">💈</span>
-
-        <div>
-          <span class="brand-name">DKBZA</span>
-          <span class="brand-sub">BARBER STUDIO</span>
-        </div>
-
-      </a>
-
-
-      <nav class="nav-links">
-
-        <a href="nosotros.html">Nosotros</a>
-
-        <a href="servicios.html">Servicios</a>
-
-        <a href="staff.html">Staff</a>
-
-        <a href="galeria.html">Galería</a>
-
-        <a href="reservas.html">Reservas</a>
-
-        <a href="resenas.html">Reseñas</a>
-
-        <a href="tienda.html">Tienda</a>
-
-        <a href="contacto.html">Contacto</a>
-
-      </nav>
-
-
-      <a href="reservas.html" class="btn-blue nav-btn">
-        Reservar Turno
-      </a>
-
-    </div>
-
-  </header>
-
+<?php
+  $titulo_pagina = 'DKBZA Barber Studio | Reservas';
+  include('includes/header.php');
+  include('includes/nav.php');
+?>
 
   <!-- =========================================================
        RESERVAS
@@ -443,15 +375,15 @@
                 </option>
 
                 <option value="Corte Clásico">
-                  Corte Clásico / Fade ($12.000)
+                  Corte Clásico / Fade ($18.000)
                 </option>
 
                 <option value="Barba Completa">
-                  Barba Completa / Ritual ($8.500)
+                  Barba Completa / Ritual ($9.000)
                 </option>
 
                 <option value="Combo DKBZA">
-                  Combo DKBZA ($18.000)
+                  Combo DKBZA ($25.000)
                 </option>
 
               </select>
@@ -510,28 +442,4 @@
 
   </section>
 
-
-  <!-- FOOTER -->
-
-  <footer class="footer">
-
-    <div class="container footer-content">
-
-      <span>
-        © 2026 DKBZA Barber Studio · Todos los derechos reservados
-      </span>
-
-      <a href="admin.html" id="admin-login-btn" class="btn-ghost-sm">
-        🔒 Admin
-      </a>
-
-    </div>
-
-  </footer>
-
-
-  <script src="./js/script.js"></script>
-
-</body>
-
-</html>
+<?php include('includes/footer.php'); ?>
