@@ -1107,3 +1107,29 @@ h1, h2, h3, h4, .mono {
   border: 1px solid #ef4444;
   color: #fca5a5;
 }
+/* ===== TP5: buscador GET ===== */
+.search-form {
+  display: flex;
+  gap: 12px;
+  margin: 24px 0;
+  max-width: 600px;
+}
+
+.search-form .wireframe-input {
+  flex: 1;
+  margin: 0;
+}
+
+.alerta a {
+  color: inherit;
+  font-weight: 600;
+  margin-left: 8px;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
