@@ -1,48 +1,14 @@
 <?php
   $titulo_pagina = 'DKBZA | Panel de Administración';
+  require_once __DIR__ . '/config/conexion.php';
+
+  $stmt = $pdo->prepare('SELECT COUNT(*) AS total FROM servicios WHERE estado = :estado');
+  $stmt->execute([':estado' => 1]);
+  $total_servicios = (int) $stmt->fetch()['total'];
+
   include('includes/header.php');
+  include('includes/admin_nav.php');
 ?>
-
-  <!-- =========================================================
-       NAVBAR DEL ADMIN
-       ========================================================= -->
-
-  <header class="navbar">
-
-    <div class="nav-container">
-
-      <!-- LOGO -->
-
-      <a href="index.php" class="brand">
-
-        <span class="brand-icon">💈</span>
-
-        <div>
-
-          <span class="brand-name">
-            DKBZA
-          </span>
-
-          <span class="brand-sub">
-            ADMIN PANEL
-          </span>
-
-        </div>
-
-      </a>
-
-
-      <!-- VOLVER A LA WEB -->
-
-      <a href="index.php" class="btn-ghost-sm">
-        ← Volver al sitio
-      </a>
-
-    </div>
-
-  </header>
-
-
 
   <!-- =========================================================
        CONTENIDO PRINCIPAL DEL DASHBOARD
@@ -162,7 +128,7 @@
           </span>
 
           <strong>
-            3
+            <?php echo $total_servicios; ?>
           </strong>
 
           <small>
@@ -317,16 +283,14 @@
             </p>
 
             <span class="admin-card-info">
-              3 servicios
+              <?php echo $total_servicios; ?> servicios
             </span>
 
           </div>
 
-          <button
-            type="button"
-            class="btn-blue admin-action">
-            Ver servicios
-          </button>
+          <a href="admin_servicios.php" class="btn-blue admin-action">
+            Gestionar servicios
+          </a>
 
         </div>
 
@@ -614,31 +578,4 @@
 
 
 
-  <!-- =========================================================
-       FOOTER
-       ========================================================= -->
-
-  <footer class="footer">
-
-    <div class="container footer-content">
-
-      <span>
-        © 2026 DKBZA Barber Studio · Panel de Administración
-      </span>
-
-      <a href="index.php" class="btn-ghost-sm">
-        ← Volver al sitio
-      </a>
-
-    </div>
-
-  </footer>
-
-
-
-  <!-- JAVASCRIPT -->
-  <script src="./js/script.js"></script>
-
-</body>
-
-</html>
+<?php include('includes/admin_footer.php'); ?>

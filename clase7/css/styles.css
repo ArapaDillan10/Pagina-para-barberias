@@ -1133,3 +1133,99 @@ h1, h2, h3, h4, .mono {
   overflow: hidden;
   clip: rect(0 0 0 0);
 }
+
+/* =========================================================
+   TP7 - CRUD DE SERVICIOS (PANEL ADMIN)
+   ========================================================= */
+
+.admin-nav-links {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+a.btn-blue,
+a.btn-danger {
+  display: inline-block;
+  text-decoration: none;
+  text-align: center;
+}
+
+.btn-danger {
+  background: #dc2626;
+  color: #fff;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-danger:hover {
+  background: #b91c1c;
+}
+
+.admin-thumb {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.admin-acciones {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.form-servicio {
+  display: grid;
+  gap: 18px;
+  max-width: 640px;
+}
+
+.form-grupo {
+  display: grid;
+  gap: 6px;
+}
+
+.form-grupo label {
+  font-weight: 600;
+}
+
+.form-servicio .wireframe-input {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.form-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.imagen-actual {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+
+.imagen-actual img {
+  width: 96px;
+  height: 96px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.confirmar-card {
+  display: grid;
+  gap: 16px;
+  max-width: 520px;
+  padding: 24px;
+  border: 1px solid rgba(220, 38, 38, 0.5);
+  border-radius: 12px;
+  background: rgba(220, 38, 38, 0.08);
+}
