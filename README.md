@@ -1,6 +1,6 @@
 # 💈 DKBZA Barber Studio
 
-Sitio web multipágina, moderno y responsivo para barberías, desarrollado a partir de un diseño en Figma. Representa a **DKBZA Barber Studio** (Salta Capital, Argentina) y en la Unidad 4 se migró de HTML estático a **PHP**, con plantillas reutilizables, variables de entorno y procesamiento seguro de formularios.
+Sitio web multipágina, moderno y responsivo para barberías, desarrollado a partir de un diseño en Figma. Representa a **DKBZA Barber Studio** (Salta Capital, Argentina) y en la Unidad 4 se migró de HTML estático a **PHP**, con plantillas reutilizables, variables de entorno y procesamiento seguro de formularios. En la Clase 7 se agregó persistencia en **MySQL** con PDO y un CRUD de servicios en el Panel Admin.
 
 ## 🚀 Características
 - **Dark Theme:** Estilo oscuro con tipografías `Inter` y `JetBrains Mono`.
@@ -10,6 +10,7 @@ Sitio web multipágina, moderno y responsivo para barberías, desarrollado a par
 - **Plantillas PHP (SSI):** header, nav y footer compartidos por todas las páginas.
 - **Navegación dinámica:** título de pestaña por página y resaltado de la sección activa en el menú.
 - **Formularios procesados en el servidor (Clase 5):** contacto por `POST` y buscador de servicios por `GET`, con sanitización contra XSS, validación y mensajes al usuario.
+- **Persistencia en MySQL (Clase 7):** los servicios se guardan en una base de datos y se administran desde el Panel Admin (alta, edición con imagen y baja), siempre con consultas preparadas (PDO).
 
 ## 🔄 Refactorización a PHP 
 
@@ -35,7 +36,8 @@ El proyecto partió de la maqueta estática en HTML del Hito 1 y se migró a PHP
 
 - HTML5, CSS3, JavaScript (ES6+) y Bootstrap
 - PHP 8.x
-- XAMPP (Apache)
+- MySQL / MariaDB con PDO (phpMyAdmin)
+- XAMPP (Apache + MySQL)
 - Prettier (formateo)
 - Git y GitHub (ramas, commits y Pull Requests)
 
@@ -43,6 +45,20 @@ El proyecto partió de la maqueta estática en HTML del Hito 1 y se migró a PHP
 
 ```
 Barberias/
+├── clase7/
+│   ├── config/
+│   │   ├── env.php
+│   │   └── conexion.php        ← Conexión PDO a MySQL
+│   ├── database/
+│   │   └── dkbza_db.sql        ← Script de la base y datos iniciales
+│   ├── includes/               ← header, nav, footer + plantillas del panel
+│   ├── admin.php               ← Dashboard con el total de servicios
+│   ├── admin_servicios.php     ← CRUD: listado (Read)
+│   ├── crear_servicio.php      ← CRUD: alta (Create)
+│   ├── editar_servicio.php     ← CRUD: edición (Update)
+│   ├── eliminar_servicio.php   ← CRUD: baja (Delete)
+│   ├── servicios.php           ← Página pública que lee desde MySQL
+│   └── ... (resto de las páginas .php)
 ├── clase5/
 │   ├── config/
 │   ├── includes/
@@ -88,17 +104,20 @@ Barberias/
    cd C:\xampp\htdocs
    git clone https://github.com/ArapaDillan10/Pagina-para-barberias Barberias
    ```
-3. Crear los archivos de configuración a partir de la plantilla (uno en la raíz y otro en `clase5`):
+3. Crear los archivos de configuración a partir de la plantilla (uno en la raíz, otro en `clase5` y otro en `clase7`):
    ```bash
    cd Barberias
    copy .env.example .env
    copy clase5\.env.example clase5\.env
+   copy clase7\.env.example clase7\.env
    ```
-   y completar los valores en cada `.env`.
-4. Abrir el **XAMPP Control Panel** e iniciar **Apache**.
-5. Entrar desde el navegador a:
+   y completar los valores en cada `.env`. En `clase7/.env` van los datos de la base (`DB_HOST`, `DB_NAME`, `DB_USER`, `DB_PASS`, `DB_CHARSET`).
+4. Abrir el **XAMPP Control Panel** e iniciar **Apache** y **MySQL**.
+5. Crear la base de datos de la Clase 7: entrar a <http://localhost/phpmyadmin>, abrir la pestaña **SQL**, pegar el contenido de [`clase7/database/dkbza_db.sql`](clase7/database/dkbza_db.sql) y ejecutarlo.
+6. Entrar desde el navegador a:
    - Sitio (TP4): <http://localhost/Barberias/>
    - Entrega de la Clase 5: <http://localhost/Barberias/clase5/>
+   - Entrega de la Clase 7: <http://localhost/Barberias/clase7/>
 
 ## 📸 Evidencia de funcionamiento
 
@@ -179,6 +198,83 @@ Buscador que filtra los servicios de la barbería por nombre o descripción. El 
 **Búsqueda sin resultados:**
 
 ![Búsqueda sin resultados](capturas/11-get-sin-resultado.png)
+
+---
+
+## 🗄️ Clase 7: Persistencia PHP-MySQL Segura (PDO + CRUD)
+
+Todo el desarrollo de esta entrega está en la carpeta [`clase7/`](clase7/), una copia del sitio de la Clase 5 conectada a una base de datos MySQL.
+
+🔗 **Probar localmente:** <http://localhost/Barberias/clase7/> · Panel: <http://localhost/Barberias/clase7/admin_servicios.php>
+
+### 🧩 Modelo de datos
+
+El modelo se diseñó con los criterios de la Clase 6: nombres en `snake_case`, clave primaria autoincremental, precios en `DECIMAL(10,2)`, un campo `estado` para mostrar u ocultar el servicio y fechas de auditoría. El script completo está en [`clase7/database/dkbza_db.sql`](clase7/database/dkbza_db.sql).
+
+```sql
+CREATE TABLE servicios (
+  id          INT AUTO_INCREMENT PRIMARY KEY,
+  nombre      VARCHAR(100) NOT NULL,
+  descripcion TEXT,
+  precio      DECIMAL(10, 2) NOT NULL,
+  imagen      VARCHAR(255),
+  estado      TINYINT NOT NULL DEFAULT 1,
+  created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB;
+```
+
+### 🔌 Conexión segura (`clase7/config/conexion.php`)
+
+- Conexión con **PDO** y charset `utf8mb4`.
+- Las credenciales se leen del `.env` con `env()`. No están escritas en el código y el `.env` no se sube al repositorio.
+- `PDO::ERRMODE_EXCEPTION` para manejar errores con `try-catch`, `PDO::FETCH_ASSOC` por defecto y `PDO::ATTR_EMULATE_PREPARES => false` para usar sentencias preparadas reales.
+- Si la conexión falla, el detalle técnico se guarda con `error_log()` y el usuario solo ve un mensaje neutro.
+
+![Conexión OK](capturas/12-conexion-ok.png)
+
+### 🛠️ CRUD de servicios en el Panel Admin
+
+| Operación | Archivo | Consulta |
+|---|---|---|
+| **Create** | `crear_servicio.php` | `INSERT INTO servicios (...) VALUES (:nombre, :descripcion, :precio, :imagen, :estado)` |
+| **Read** | `admin_servicios.php` / `servicios.php` | `SELECT ... FROM servicios` (la página pública filtra por `estado = 1`) |
+| **Update** | `editar_servicio.php` | `UPDATE servicios SET ... WHERE id = :id` |
+| **Delete** | `eliminar_servicio.php` | `DELETE FROM servicios WHERE id = :id` |
+
+- El **dashboard** (`admin.php`) muestra la cantidad real de servicios activos con un `COUNT(*)`.
+- **Alta y edición** comparten el formulario `includes/form_servicio.php`, con validación en el servidor: nombre obligatorio de hasta 100 caracteres y precio numérico positivo. Si hay errores, se muestran y los datos cargados se conservan.
+- **Imagen del servicio:** el formulario usa `enctype="multipart/form-data"`. Las imágenes se validan con `getimagesize()` (solo JPG, PNG o WEBP de hasta 2 MB), se guardan con un nombre único generado en `img/servicios/` y en la base se registra solo la ruta. Al editar, si no se elige una imagen nueva, se mantiene la anterior. Si se reemplaza o se elimina el servicio, se borra el archivo viejo.
+- **Eliminación con confirmación:** el enlace "Eliminar" abre una pantalla de confirmación, y el borrado se ejecuta solo al enviarla por `POST`.
+- Después de cada operación se redirige al listado (patrón Post/Redirect/Get) con un mensaje de éxito.
+
+**Listado de servicios:**
+
+![Listado del panel](capturas/14-admin-lista.png)
+
+**Alta de un servicio con imagen:**
+
+![Agregar servicio](capturas/15-crear-servicio.png)
+
+**Edición (muestra la imagen actual):**
+
+![Editar servicio](capturas/16-editar-servicio.png)
+
+**Confirmación antes de eliminar:**
+
+![Confirmar eliminación](capturas/17-eliminar-confirmacion.png)
+
+**El servicio agregado desde el panel aparece en la página pública:**
+
+![Servicio en la página pública](capturas/18-servicio-publico.png)
+
+### 🔒 Seguridad
+
+- **Inyección SQL:** todas las consultas usan **sentencias preparadas** con parámetros nombrados (`:id`, `:nombre`, `:busqueda_nombre`...). Los datos del usuario nunca se concatenan en el SQL. Los `id` se validan además con `FILTER_VALIDATE_INT`.
+- **XSS:** todo lo que viene de la base o de un formulario se imprime con `htmlspecialchars(..., ENT_QUOTES, 'UTF-8')` mediante la función `e()`.
+- El buscador GET de `servicios.php` ahora consulta la base con `LIKE` y parámetros preparados. Buscar `' OR '1'='1` no devuelve todos los registros:
+
+![Inyección SQL bloqueada](capturas/13-sqli-bloqueado.png)
 
 ---
 
