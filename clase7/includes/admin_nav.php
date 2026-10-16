@@ -43,6 +43,13 @@
           ← Volver al sitio
         </a>
 
+        <form method="post" action="logout.php" class="form-logout">
+          <?php echo csrf_campo(); ?>
+          <button type="submit" class="btn-danger">
+            Cerrar sesión (<?php echo htmlspecialchars($_SESSION['admin_usuario'] ?? '', ENT_QUOTES, 'UTF-8'); ?>)
+          </button>
+        </form>
+
       </div>
 
     </div>
