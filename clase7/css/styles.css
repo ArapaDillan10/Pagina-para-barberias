@@ -1229,3 +1229,28 @@ a.btn-danger {
   border-radius: 12px;
   background: rgba(220, 38, 38, 0.08);
 }
+
+/* =========================================================
+   LOGIN Y CIERRE DE SESIÓN DEL PANEL
+   ========================================================= */
+
+.login-card {
+  max-width: 420px;
+  margin: 40px auto;
+  padding: 32px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+}
+
+.login-card .form-servicio {
+  max-width: none;
+}
+
+.form-logout {
+  margin: 0;
+}
+
+.form-logout .btn-danger {
+  padding: 6px 12px;
+  font-size: 0.85rem;
+}
