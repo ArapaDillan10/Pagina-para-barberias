@@ -50,8 +50,14 @@ Barberias/
 │   │   ├── env.php
 │   │   └── conexion.php        ← Conexión PDO a MySQL
 │   ├── database/
-│   │   └── dkbza_db.sql        ← Script de la base y datos iniciales
+│   │   ├── dkbza_db.sql        ← Script de la base y datos iniciales
+│   │   ├── seguridad.sql       ← Tablas usuarios / login_intentos + usuario MySQL
+│   │   └── crear_admin.php     ← Crea el usuario del panel (solo por terminal)
 │   ├── includes/               ← header, nav, footer + plantillas del panel
+│   │   ├── sesion.php          ← Sesión segura y tokens CSRF
+│   │   └── auth.php            ← Protege las páginas del panel
+│   ├── login.php               ← Ingreso al panel
+│   ├── logout.php              ← Cierre de sesión (POST + CSRF)
 │   ├── admin.php               ← Dashboard con el total de servicios
 │   ├── admin_servicios.php     ← CRUD: listado (Read)
 │   ├── crear_servicio.php      ← CRUD: alta (Create)
@@ -114,6 +120,11 @@ Barberias/
    y completar los valores en cada `.env`. En `clase7/.env` van los datos de la base (`DB_HOST`, `DB_NAME`, `DB_USER`, `DB_PASS`, `DB_CHARSET`).
 4. Abrir el **XAMPP Control Panel** e iniciar **Apache** y **MySQL**.
 5. Crear la base de datos de la Clase 7: entrar a <http://localhost/phpmyadmin>, abrir la pestaña **SQL**, pegar el contenido de [`clase7/database/dkbza_db.sql`](clase7/database/dkbza_db.sql) y ejecutarlo.
+   Después ejecutar de la misma forma [`clase7/database/seguridad.sql`](clase7/database/seguridad.sql), reemplazando antes `CAMBIAR_ESTA_CLAVE` por una contraseña propia (solo en phpMyAdmin, no en el archivo). Esa misma contraseña va en `DB_PASS` de `clase7/.env`, con `DB_USER=dkbza_app`.
+   Por último, crear el usuario del panel desde la terminal (pide la contraseña por teclado):
+   ```bash
+   C:\xampp\php\php.exe clase7\database\crear_admin.php admin
+   ```
 6. Entrar desde el navegador a:
    - Sitio (TP4): <http://localhost/Barberias/>
    - Entrega de la Clase 5: <http://localhost/Barberias/clase5/>
@@ -205,7 +216,7 @@ Buscador que filtra los servicios de la barbería por nombre o descripción. El 
 
 Todo el desarrollo de esta entrega está en la carpeta [`clase7/`](clase7/), una copia del sitio de la Clase 5 conectada a una base de datos MySQL.
 
-🔗 **Probar localmente:** <http://localhost/Barberias/clase7/> · Panel: <http://localhost/Barberias/clase7/admin_servicios.php>
+🔗 **Probar localmente:** <http://localhost/Barberias/clase7/> · Panel: <http://localhost/Barberias/clase7/login.php>
 
 ### 🧩 Modelo de datos
 
@@ -275,6 +286,46 @@ CREATE TABLE servicios (
 - El buscador GET de `servicios.php` ahora consulta la base con `LIKE` y parámetros preparados. Buscar `' OR '1'='1` no devuelve todos los registros:
 
 ![Inyección SQL bloqueada](capturas/13-sqli-bloqueado.png)
+
+### 🛡️ Login y seguridad del panel
+
+Antes, el panel se "protegía" con un `prompt()` de JavaScript y la contraseña estaba escrita en `script.js`: cualquiera podía leerla con Ctrl+U o entrar escribiendo `admin.php` en la barra. Ahora el control lo hace el servidor con PHP y sesiones.
+
+| Riesgo | Medida aplicada | Archivo |
+|---|---|---|
+| Contraseña a la vista | Se eliminó la clave de `script.js`. Los usuarios están en la tabla `usuarios` y la contraseña se guarda cifrada con `password_hash()` (bcrypt) y se valida con `password_verify()` | `login.php`, `database/crear_admin.php` |
+| Entrar por URL sin login | Todas las páginas del panel incluyen `includes/auth.php`, que redirige a `login.php` si no hay sesión | `includes/auth.php` |
+| Robo de sesión | `session_regenerate_id(true)` al ingresar, cookie `HttpOnly` + `SameSite=Strict`, `use_strict_mode` y cierre automático a los 30 minutos sin uso | `includes/sesion.php`, `includes/auth.php` |
+| Fuerza bruta | Los intentos fallidos se guardan en `login_intentos`: al 5.º error la IP queda bloqueada 15 minutos | `login.php` |
+| CSRF | Login, logout, alta, edición y baja llevan un token aleatorio (`random_bytes`) que se verifica con `hash_equals()` | `includes/sesion.php` |
+| Cerrar sesión de verdad | `logout.php` solo acepta POST con token, vacía `$_SESSION`, borra la cookie y hace `session_destroy()` | `logout.php` |
+| Páginas del panel en caché | Cabecera `Cache-Control: no-store`: con "Atrás" no se ve el panel después de salir | `includes/auth.php` |
+| Usuario `root` en la conexión | El sitio usa `dkbza_app`, que solo tiene `SELECT, INSERT, UPDATE, DELETE` sobre `dkbza_db` (no puede borrar tablas ni ver otras bases) | `database/seguridad.sql` |
+| Archivos internos accesibles | `.htaccess` bloquea `.env`, `.sql`, archivos ocultos y las carpetas `config/`, `includes/` y `database/`; sin listado de carpetas | `.htaccess` |
+| Subida de archivos maliciosos | En `img/servicios/` no se ejecuta PHP aunque se suba un archivo con esa extensión | `img/servicios/.htaccess` |
+| Clickjacking y otros | Cabeceras `X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy` y `Permissions-Policy` | `.htaccess` |
+
+Además, `crear_admin.php` solo funciona desde la terminal (en el navegador responde "Acceso denegado"), así nadie puede crearse un usuario desde la web.
+
+**Pantalla de ingreso** (el botón 🔒 Admin del pie de página lleva acá):
+
+![Login del panel](capturas/19-login.png)
+
+**Contraseña incorrecta**, con el contador de intentos:
+
+![Login con error](capturas/20-login-error.png)
+
+**Cierre de sesión:** después de salir hay que volver a ingresar.
+
+![Cierre de sesión](capturas/21-logout.png)
+
+**El `.env` no se puede abrir desde el navegador:**
+
+![Acceso prohibido al .env](capturas/22-env-bloqueado.png)
+
+**Contraseña cifrada en la base:** solo se guarda el hash, nunca la contraseña real.
+
+![Contraseña cifrada](capturas/23-password-hash.png)
 
 ---
 
