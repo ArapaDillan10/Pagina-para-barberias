@@ -1,5 +1,6 @@
 <?php
   $titulo_pagina = 'DKBZA | Eliminar Servicio';
+  require_once __DIR__ . '/includes/auth.php';
   require_once __DIR__ . '/config/conexion.php';
   require_once __DIR__ . '/includes/funciones.php';
 
@@ -25,6 +26,8 @@
   }
 
   if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    csrf_verificar();
+
     // DELETE con consulta preparada
     $stmt = $pdo->prepare('DELETE FROM servicios WHERE id = :id');
     $stmt->execute([':id' => $id]);
@@ -67,6 +70,7 @@
         </p>
 
         <form method="post" action="eliminar_servicio.php" class="admin-acciones">
+          <?php echo csrf_campo(); ?>
           <input type="hidden" name="id" value="<?php echo (int) $servicio['id']; ?>">
 
           <button type="submit" class="btn-danger">

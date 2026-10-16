@@ -16,6 +16,8 @@
 
       <form method="post" action="<?php echo e($accion_form); ?>" enctype="multipart/form-data" class="form-servicio" novalidate>
 
+        <?php echo csrf_campo(); ?>
+
         <div class="form-grupo">
           <label for="nombre">Nombre del servicio *</label>
           <input
