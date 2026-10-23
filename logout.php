@@ -3,7 +3,7 @@
 
   // Solo se cierra sesión por POST y con token CSRF
   if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header('Location: admin.php');
+    header('Location: index.php');
     exit;
   }
 

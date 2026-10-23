@@ -1,6 +1,7 @@
 <?php
   $titulo_pagina = 'DKBZA | Panel de Administración';
-  require_once __DIR__ . '/includes/auth.php';
+  require_once __DIR__ . '/includes/auth_guard.php';
+  verificarRol('admin');
   require_once __DIR__ . '/config/conexion.php';
 
   $stmt = $pdo->prepare('SELECT COUNT(*) AS total FROM servicios WHERE estado = :estado');

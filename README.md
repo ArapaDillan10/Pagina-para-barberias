@@ -54,14 +54,14 @@ Barberias/
 │   ├── schema.sql           ← TP6: esquema relacional completo (tablas, PK, FK, índices)
 │   ├── consultas.sql        ← TP6: datos de prueba y consultas CRUD / JOIN
 │   ├── dkbza_db.sql         ← Script de la base y datos iniciales (TP7)
-│   ├── seguridad.sql        ← Tablas usuarios / login_intentos + usuario MySQL
-│   └── crear_admin.php      ← Crea el usuario del panel (solo por terminal)
+│   ├── seguridad.sql        ← Usuario MySQL con permisos mínimos
+│   └── crear_admin.php      ← Crea un administrador (solo por terminal)
 ├── includes/
 │   ├── header.php, nav.php, footer.php        ← Plantillas del sitio público
 │   ├── admin_nav.php, admin_footer.php        ← Plantillas del panel
 │   ├── form_servicio.php, funciones.php
-│   ├── sesion.php           ← Sesión segura y tokens CSRF
-│   └── auth.php             ← Protege las páginas del panel
+│   ├── sesion.php           ← Sesión segura, tokens CSRF y cierre de sesión
+│   └── auth_guard.php       ← TP8: verificarSesion() y verificarRol()
 ├── css/styles.css
 ├── js/script.js
 ├── img/
@@ -69,8 +69,10 @@ Barberias/
 ├── capturas/                ← Evidencia para el README
 ├── index.php, nosotros.php, servicios.php, staff.php, galeria.php,
 │   reservas.php, resenas.php, tienda.php, contacto.php
-├── login.php / logout.php   ← Ingreso y cierre de sesión del panel
-├── admin.php                ← Dashboard del panel
+├── registro.php             ← TP8: alta de usuarios
+├── login.php / logout.php   ← TP8: ingreso con email y cierre de sesión
+├── mi_cuenta.php            ← TP8: vista para cualquier usuario logueado
+├── admin.php                ← Dashboard del panel (solo rol admin)
 ├── admin_servicios.php      ← CRUD: listado (Read)
 ├── crear_servicio.php       ← CRUD: alta (Create)
 ├── editar_servicio.php      ← CRUD: edición (Update)
@@ -88,6 +90,7 @@ Barberias/
 | TP5: Formularios y seguridad web | [`tp5`](https://github.com/ArapaDillan10/Pagina-para-barberias/tree/tp5) | [#4](https://github.com/ArapaDillan10/Pagina-para-barberias/pull/4) |
 | TP6: Esquema relacional en MySQL | [`tp6`](https://github.com/ArapaDillan10/Pagina-para-barberias/tree/tp6) | [#8](https://github.com/ArapaDillan10/Pagina-para-barberias/pull/8) |
 | TP7: MySQL, PDO, CRUD y login seguro | [`tp7`](https://github.com/ArapaDillan10/Pagina-para-barberias/tree/tp7) | [#5](https://github.com/ArapaDillan10/Pagina-para-barberias/pull/5) · [#6](https://github.com/ArapaDillan10/Pagina-para-barberias/pull/6) |
+| TP8: Sesiones, autenticación y roles | [`tp8`](https://github.com/ArapaDillan10/Pagina-para-barberias/tree/tp8) | [#9](https://github.com/ArapaDillan10/Pagina-para-barberias/pull/9) |
 
 Hasta el TP7 cada entrega estaba en su propia carpeta (`clase5/`, `clase7/`). Después se unificó todo en la raíz: las etiquetas permiten ver el código tal como se entregó.
 
@@ -105,15 +108,16 @@ Hasta el TP7 cada entrega estaba en su propia carpeta (`clase5/`, `clase7/`). De
    copy .env.example .env
    ```
 4. Abrir el **XAMPP Control Panel** e iniciar **Apache** y **MySQL**.
-5. Crear la base de datos: entrar a <http://localhost/phpmyadmin>, abrir la pestaña **SQL**, pegar el contenido de [`database/dkbza_db.sql`](database/dkbza_db.sql) y ejecutarlo.
-   Después ejecutar de la misma forma [`database/seguridad.sql`](database/seguridad.sql), reemplazando antes `CAMBIAR_ESTA_CLAVE` por una contraseña propia (solo en phpMyAdmin, no en el archivo). Esa misma contraseña va en `DB_PASS` del `.env`, con `DB_USER=dkbza_app`.
-   Por último, crear el usuario del panel desde la terminal (pide la contraseña por teclado):
+5. Crear la base de datos: entrar a <http://localhost/phpmyadmin>, abrir la pestaña **SQL**, pegar el contenido de [`database/schema.sql`](database/schema.sql) y ejecutarlo. Después hacer lo mismo con [`database/consultas.sql`](database/consultas.sql), que carga los servicios y los datos de prueba.
+   Luego ejecutar de la misma forma [`database/seguridad.sql`](database/seguridad.sql), reemplazando antes `CAMBIAR_ESTA_CLAVE` por una contraseña propia (solo en phpMyAdmin, no en el archivo). Esa misma contraseña va en `DB_PASS` del `.env`, con `DB_USER=dkbza_app`.
+   Por último, crear el administrador desde la terminal (pide el nombre y la contraseña por teclado):
    ```bash
-   C:\xampp\php\php.exe database\crear_admin.php admin
+   C:\xampp\php\php.exe database\crear_admin.php admin@dkbza.com
    ```
 6. Entrar desde el navegador a:
    - Sitio: <http://localhost/Barberias/>
-   - Panel admin: <http://localhost/Barberias/login.php>
+   - Ingreso (admin y usuarios): <http://localhost/Barberias/login.php>
+   - Crear cuenta: <http://localhost/Barberias/registro.php>
 
 ## 📸 Evidencia de funcionamiento
 
@@ -242,7 +246,7 @@ Se diseñó el modelo de datos completo de la barbería, aplicando normalizació
 - Índices: `idx_servicios_estado`, porque el sitio siempre filtra los servicios activos, e `idx_turnos_fecha`, para buscar la agenda por día y hora.
 - Todas las tablas usan `INT AUTO_INCREMENT PRIMARY KEY`, nombres en `snake_case` y fechas de auditoría `created_at` / `updated_at`.
 
-> La tabla `usuarios` ya tiene la estructura que pide el TP8 (`nombre`, `email`, `password`, `rol`). El login del panel se adapta a esta tabla en el TP8.
+> La tabla `usuarios` tiene la estructura que pide el TP8 (`nombre`, `email`, `password`, `rol`). El login la usa desde el TP8 (ver [Clase 8](#-clase-8-sesiones-autenticación-y-roles)).
 
 ### 🧪 Consultas de prueba (`consultas.sql`)
 
@@ -344,12 +348,12 @@ Antes, el panel se "protegía" con un `prompt()` de JavaScript y la contraseña 
 | Riesgo | Medida aplicada | Archivo |
 |---|---|---|
 | Contraseña a la vista | Se eliminó la clave de `script.js`. Los usuarios están en la tabla `usuarios` y la contraseña se guarda cifrada con `password_hash()` (bcrypt) y se valida con `password_verify()` | `login.php`, `database/crear_admin.php` |
-| Entrar por URL sin login | Todas las páginas del panel incluyen `includes/auth.php`, que redirige a `login.php` si no hay sesión | `includes/auth.php` |
-| Robo de sesión | `session_regenerate_id(true)` al ingresar, cookie `HttpOnly` + `SameSite=Strict`, `use_strict_mode` y cierre automático a los 30 minutos sin uso | `includes/sesion.php`, `includes/auth.php` |
+| Entrar por URL sin login | Todas las páginas del panel incluyen el guardián de sesión, que redirige a `login.php` si no hay sesión (desde el TP8, `includes/auth_guard.php`) | `includes/auth_guard.php` |
+| Robo de sesión | `session_regenerate_id(true)` al ingresar, cookie `HttpOnly` + `SameSite=Strict`, `use_strict_mode` y cierre automático a los 30 minutos sin uso | `includes/sesion.php`, `includes/auth_guard.php` |
 | Fuerza bruta | Los intentos fallidos se guardan en `login_intentos`: al 5.º error la IP queda bloqueada 15 minutos | `login.php` |
 | CSRF | Login, logout, alta, edición y baja llevan un token aleatorio (`random_bytes`) que se verifica con `hash_equals()` | `includes/sesion.php` |
 | Cerrar sesión de verdad | `logout.php` solo acepta POST con token, vacía `$_SESSION`, borra la cookie y hace `session_destroy()` | `logout.php` |
-| Páginas del panel en caché | Cabecera `Cache-Control: no-store`: con "Atrás" no se ve el panel después de salir | `includes/auth.php` |
+| Páginas del panel en caché | Cabecera `Cache-Control: no-store`: con "Atrás" no se ve el panel después de salir | `includes/auth_guard.php` |
 | Usuario `root` en la conexión | El sitio usa `dkbza_app`, que solo tiene `SELECT, INSERT, UPDATE, DELETE` sobre `dkbza_db` (no puede borrar tablas ni ver otras bases) | `database/seguridad.sql` |
 | Archivos internos accesibles | `.htaccess` bloquea `.env`, `.sql`, archivos ocultos y las carpetas `config/`, `includes/` y `database/`; sin listado de carpetas | `.htaccess` |
 | Subida de archivos maliciosos | En `img/servicios/` no se ejecuta PHP aunque se suba un archivo con esa extensión | `img/servicios/.htaccess` |
@@ -357,7 +361,7 @@ Antes, el panel se "protegía" con un `prompt()` de JavaScript y la contraseña 
 
 Además, `crear_admin.php` solo funciona desde la terminal (en el navegador responde "Acceso denegado"), así nadie puede crearse un usuario desde la web.
 
-**Pantalla de ingreso** (el botón 🔒 Admin del pie de página lleva acá):
+**Pantalla de ingreso** (versión del TP7, con usuario en vez de email):
 
 ![Login del panel](capturas/19-login.png)
 
@@ -376,6 +380,88 @@ Además, `crear_admin.php` solo funciona desde la terminal (en el navegador resp
 **Contraseña cifrada en la base:** solo se guarda el hash, nunca la contraseña real.
 
 ![Contraseña cifrada](capturas/23-password-hash.png)
+
+---
+
+## 🔐 Clase 8: Sesiones, Autenticación y Roles
+
+El sitio pasó de tener un único usuario del panel a un sistema de cuentas: cualquier persona puede registrarse, entra con su email y ve una página u otra según su **rol** (`admin` o `usuario`). Se usa la tabla `usuarios` diseñada en el TP6.
+
+🔗 **Probar localmente:** <http://localhost/Barberias/registro.php> · <http://localhost/Barberias/login.php>
+
+### 📂 Archivos
+
+| Archivo | Qué hace |
+|---|---|
+| `registro.php` | Alta de usuarios. Valida en el servidor, rechaza emails repetidos y guarda la contraseña con `password_hash($clave, PASSWORD_BCRYPT)`. El rol siempre es `usuario`: nunca se toma del formulario |
+| `login.php` | Busca al usuario por email con una consulta preparada, valida con `password_verify()`, ejecuta `session_regenerate_id(true)` y guarda `$_SESSION['usuario_id']`, `$_SESSION['usuario_nombre']` y `$_SESSION['rol']`. Redirige al panel o a Mi cuenta según el rol |
+| `includes/auth_guard.php` | `verificarSesion()`: sin sesión redirige a `login.php?error=acceso_denegado`. `verificarRol('admin')`: si el rol no coincide, redirige a `mi_cuenta.php?error=sin_permiso` |
+| `mi_cuenta.php` | Vista para **cualquier usuario logueado**: sus datos y sus turnos (JOIN de `turnos`, `barberos`, `turno_servicio` y `servicios`) |
+| `admin.php` y CRUD | Vista **exclusiva del administrador**: cada página empieza con `verificarRol('admin')` |
+| `logout.php` | Solo por POST con token CSRF: vacía `$_SESSION`, borra la cookie con `session_get_cookie_params()`, hace `session_destroy()` y vuelve al login |
+| `database/crear_admin.php` | Crea o actualiza un administrador desde la terminal (en el navegador responde "Acceso denegado") |
+
+Uso del guardián al principio de cada página protegida:
+
+```php
+require_once __DIR__ . '/includes/auth_guard.php';   // cualquier usuario logueado
+verificarRol('admin');                               // además, solo administradores
+```
+
+### ✅ Validaciones del registro
+
+- **Nombre:** entre 2 y 100 letras (con tildes y ñ) y espacios. Se rechazan números, símbolos y etiquetas como `<script>`.
+- **Email:** `filter_var(..., FILTER_VALIDATE_EMAIL)`, hasta 150 caracteres, guardado en minúsculas y único en la base.
+- **Contraseña:** entre 8 y 72 caracteres (el límite de bcrypt), con letras y números, y repetida igual en la confirmación.
+- Si hay errores se muestran todos juntos y se conservan el nombre y el email cargados, siempre escapados con `htmlspecialchars()`.
+
+### 🛡️ Seguridad aplicada
+
+| Riesgo | Medida |
+|---|---|
+| Contraseñas robadas de la base | Solo se guarda el hash bcrypt (`$2y$10$...`) |
+| Inyección SQL | Todas las consultas usan PDO con parámetros preparados (`:email`, `:nombre`, ...) |
+| XSS | Todo lo que viene del usuario se imprime con `e()` (`htmlspecialchars` con `ENT_QUOTES`) |
+| Fijación de sesión | `session_regenerate_id(true)` al iniciar sesión y `use_strict_mode` |
+| Escalada de privilegios | El rol lo asigna el servidor; `verificarRol('admin')` protege el panel |
+| Enumeración de usuarios | El login responde "Email o contraseña incorrectos" sin decir cuál falló, y tarda lo mismo aunque el email no exista |
+| Fuerza bruta | 5 intentos fallidos por IP bloquean el login 15 minutos (tabla `login_intentos`) |
+| CSRF | Registro, login y logout llevan token y se verifica con `hash_equals()` |
+| Sesión abandonada | Se cierra sola a los 30 minutos sin actividad |
+
+### 📸 Evidencia
+
+**Entrar a una página protegida sin sesión:**
+
+![Acceso denegado](capturas/tp8-acceso-denegado.png)
+
+**Registro con datos inválidos** (el `<script>` vuelve como texto, sin ejecutarse):
+
+![Errores de registro](capturas/tp8-registro-errores.png)
+
+**Registro correcto:**
+
+![Registro correcto](capturas/tp8-registro-ok.png)
+
+**Vista de un usuario común (`mi_cuenta.php`):**
+
+![Mi cuenta](capturas/tp8-mi-cuenta.png)
+
+**Un usuario común intenta entrar al panel:**
+
+![Sin permiso](capturas/tp8-sin-permiso.png)
+
+**Vista exclusiva del administrador:**
+
+![Panel admin](capturas/tp8-admin.png)
+
+**Cierre de sesión:**
+
+![Logout](capturas/tp8-logout.png)
+
+**Contraseñas cifradas y roles en la tabla `usuarios`:**
+
+![Hash bcrypt y roles](capturas/tp8-usuarios-hash.png)
 
 ---
 

@@ -1,27 +1,11 @@
 -- =========================================================
--- DKBZA - Seguridad del Panel Admin
--- Ejecutar en phpMyAdmin (pestaña SQL) con la base dkbza_db creada.
+-- DKBZA - Usuario de MySQL con permisos mínimos
+-- Ejecutar en phpMyAdmin (pestaña SQL) después de schema.sql.
 -- =========================================================
 
 USE dkbza_db;
 
--- Usuarios del panel. La contraseña se guarda cifrada con password_hash().
-CREATE TABLE IF NOT EXISTS usuarios (
-  id             INT AUTO_INCREMENT PRIMARY KEY,
-  usuario        VARCHAR(50) NOT NULL UNIQUE,
-  password_hash  VARCHAR(255) NOT NULL,
-  estado         TINYINT NOT NULL DEFAULT 1,
-  ultimo_acceso  TIMESTAMP NULL DEFAULT NULL,
-  created_at     TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB;
-
--- Intentos fallidos de login, para frenar ataques de fuerza bruta.
-CREATE TABLE IF NOT EXISTS login_intentos (
-  id          INT AUTO_INCREMENT PRIMARY KEY,
-  ip          VARCHAR(45) NOT NULL,
-  created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  INDEX idx_ip_fecha (ip, created_at)
-) ENGINE=InnoDB;
+-- Las tablas usuarios y login_intentos se crean en schema.sql (TP6).
 
 -- Usuario de MySQL con permisos mínimos para el sitio (no usar root).
 -- Cambiá 'CAMBIAR_ESTA_CLAVE' por una contraseña propia y poné la misma en DB_PASS del .env

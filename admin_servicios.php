@@ -1,6 +1,7 @@
 <?php
   $titulo_pagina = 'DKBZA | Gestionar Servicios';
-  require_once __DIR__ . '/includes/auth.php';
+  require_once __DIR__ . '/includes/auth_guard.php';
+  verificarRol('admin');
   require_once __DIR__ . '/config/conexion.php';
   require_once __DIR__ . '/includes/funciones.php';
 
