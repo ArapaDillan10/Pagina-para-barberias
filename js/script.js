@@ -293,20 +293,4 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 4. ACCESO ADMIN
-  const adminBtn = document.getElementById('admin-login-btn');
-  if (adminBtn) {
-    adminBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      const pass = prompt('Ingresá la contraseña de administrador:');
-      if (pass === 'admin123') {
-        alert('¡Bienvenido Dillan! Modo administrador activado.');
-        // 👈 ESTO ES LO QUE FALTABA: Acá lo mandamos al panel
-        window.location.href = 'admin.php';
-      } else if (pass !== null) {
-        alert('Contraseña incorrecta.');
-      }
-    });
-  }
-
 });

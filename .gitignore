@@ -1,4 +1,4 @@
 # Variables de entorno (datos privados)
 .env
-clase7/img/servicios/*
-!clase7/img/servicios/.htaccess
+img/servicios/*
+!img/servicios/.htaccess
