@@ -1,6 +1,6 @@
 <?php
   // Crea (o actualiza) un usuario del panel. Solo se ejecuta desde la terminal:
-  //   C:\xampp\php\php.exe clase7\database\crear_admin.php admin
+  //   C:\xampp\php\php.exe database\crear_admin.php admin
   // La contraseña se pide después, así no queda guardada en el historial de la terminal.
 
   if (PHP_SAPI !== 'cli') {

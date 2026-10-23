@@ -43,64 +43,50 @@ El proyecto partió de la maqueta estática en HTML del Hito 1 y se migró a PHP
 
 ## 📁 Estructura del proyecto
 
+Todo el sitio es **una sola aplicación** en la raíz del repositorio. Cada entrega anterior quedó marcada con una etiqueta de Git (ver [Entregas](#-entregas)).
+
 ```
 Barberias/
-├── clase7/
-│   ├── config/
-│   │   ├── env.php
-│   │   └── conexion.php        ← Conexión PDO a MySQL
-│   ├── database/
-│   │   ├── dkbza_db.sql        ← Script de la base y datos iniciales
-│   │   ├── seguridad.sql       ← Tablas usuarios / login_intentos + usuario MySQL
-│   │   └── crear_admin.php     ← Crea el usuario del panel (solo por terminal)
-│   ├── includes/               ← header, nav, footer + plantillas del panel
-│   │   ├── sesion.php          ← Sesión segura y tokens CSRF
-│   │   └── auth.php            ← Protege las páginas del panel
-│   ├── login.php               ← Ingreso al panel
-│   ├── logout.php              ← Cierre de sesión (POST + CSRF)
-│   ├── admin.php               ← Dashboard con el total de servicios
-│   ├── admin_servicios.php     ← CRUD: listado (Read)
-│   ├── crear_servicio.php      ← CRUD: alta (Create)
-│   ├── editar_servicio.php     ← CRUD: edición (Update)
-│   ├── eliminar_servicio.php   ← CRUD: baja (Delete)
-│   ├── servicios.php           ← Página pública que lee desde MySQL
-│   └── ... (resto de las páginas .php)
-├── clase5/
-│   ├── config/
-│   ├── includes/
-│   ├── css/styles.css
-│   ├── js/script.js
-│   ├── img/
-│   ├── .env.example
-│   ├── .htaccess
-│   ├── contacto.php     ← Formulario POST
-│   ├── servicios.php    ← Formulario GET (buscador)
-│   └── ... (resto de las páginas .php)
 ├── config/
-│   └── env.php          
+│   ├── env.php              ← Lee las variables del .env
+│   └── conexion.php         ← Conexión PDO a MySQL
+├── database/
+│   ├── dkbza_db.sql         ← Script de la base y datos iniciales
+│   ├── seguridad.sql        ← Tablas usuarios / login_intentos + usuario MySQL
+│   └── crear_admin.php      ← Crea el usuario del panel (solo por terminal)
 ├── includes/
-│   ├── header.php       
-│   ├── nav.php          
-│   └── footer.php       
+│   ├── header.php, nav.php, footer.php        ← Plantillas del sitio público
+│   ├── admin_nav.php, admin_footer.php        ← Plantillas del panel
+│   ├── form_servicio.php, funciones.php
+│   ├── sesion.php           ← Sesión segura y tokens CSRF
+│   └── auth.php             ← Protege las páginas del panel
 ├── css/styles.css
 ├── js/script.js
 ├── img/
-├── capturas/           
-├── .env                 
-├── .env.example         
-├── .gitignore
-├── .htaccess
-├── index.php
-├── nosotros.php
-├── servicios.php
-├── staff.php
-├── galeria.php
-├── reservas.php
-├── resenas.php
-├── tienda.php
-├── contacto.php
-└── admin.php
+│   └── servicios/           ← Imágenes subidas desde el panel (no se suben a Git)
+├── capturas/                ← Evidencia para el README
+├── index.php, nosotros.php, servicios.php, staff.php, galeria.php,
+│   reservas.php, resenas.php, tienda.php, contacto.php
+├── login.php / logout.php   ← Ingreso y cierre de sesión del panel
+├── admin.php                ← Dashboard del panel
+├── admin_servicios.php      ← CRUD: listado (Read)
+├── crear_servicio.php       ← CRUD: alta (Create)
+├── editar_servicio.php      ← CRUD: edición (Update)
+├── eliminar_servicio.php    ← CRUD: baja (Delete)
+├── .env.example             ← Plantilla de configuración
+├── .htaccess                ← Bloqueo de archivos internos y cabeceras de seguridad
+└── .gitignore
 ```
+
+## 🏷️ Entregas
+
+| Entrega | Etiqueta (versión entregada) | Pull Request |
+|---|---|---|
+| TP4: Migración a PHP con includes y `.env` | [`tp4`](https://github.com/ArapaDillan10/Pagina-para-barberias/tree/tp4) | [#3](https://github.com/ArapaDillan10/Pagina-para-barberias/pull/3) |
+| TP5: Formularios y seguridad web | [`tp5`](https://github.com/ArapaDillan10/Pagina-para-barberias/tree/tp5) | [#4](https://github.com/ArapaDillan10/Pagina-para-barberias/pull/4) |
+| TP7: MySQL, PDO, CRUD y login seguro | [`tp7`](https://github.com/ArapaDillan10/Pagina-para-barberias/tree/tp7) | [#5](https://github.com/ArapaDillan10/Pagina-para-barberias/pull/5) · [#6](https://github.com/ArapaDillan10/Pagina-para-barberias/pull/6) |
+
+Hasta el TP7 cada entrega estaba en su propia carpeta (``, ``). Después se unificó todo en la raíz: las etiquetas permiten ver el código tal como se entregó.
 
 ## 🚀 Instalación y ejecución local
 
@@ -110,25 +96,21 @@ Barberias/
    cd C:\xampp\htdocs
    git clone https://github.com/ArapaDillan10/Pagina-para-barberias Barberias
    ```
-3. Crear los archivos de configuración a partir de la plantilla (uno en la raíz, otro en `clase5` y otro en `clase7`):
+3. Crear el archivo de configuración a partir de la plantilla y completar los datos de la base (`DB_HOST`, `DB_NAME`, `DB_USER`, `DB_PASS`, `DB_CHARSET`):
    ```bash
    cd Barberias
    copy .env.example .env
-   copy clase5\.env.example clase5\.env
-   copy clase7\.env.example clase7\.env
    ```
-   y completar los valores en cada `.env`. En `clase7/.env` van los datos de la base (`DB_HOST`, `DB_NAME`, `DB_USER`, `DB_PASS`, `DB_CHARSET`).
 4. Abrir el **XAMPP Control Panel** e iniciar **Apache** y **MySQL**.
-5. Crear la base de datos de la Clase 7: entrar a <http://localhost/phpmyadmin>, abrir la pestaña **SQL**, pegar el contenido de [`clase7/database/dkbza_db.sql`](clase7/database/dkbza_db.sql) y ejecutarlo.
-   Después ejecutar de la misma forma [`clase7/database/seguridad.sql`](clase7/database/seguridad.sql), reemplazando antes `CAMBIAR_ESTA_CLAVE` por una contraseña propia (solo en phpMyAdmin, no en el archivo). Esa misma contraseña va en `DB_PASS` de `clase7/.env`, con `DB_USER=dkbza_app`.
+5. Crear la base de datos: entrar a <http://localhost/phpmyadmin>, abrir la pestaña **SQL**, pegar el contenido de [`database/dkbza_db.sql`](database/dkbza_db.sql) y ejecutarlo.
+   Después ejecutar de la misma forma [`database/seguridad.sql`](database/seguridad.sql), reemplazando antes `CAMBIAR_ESTA_CLAVE` por una contraseña propia (solo en phpMyAdmin, no en el archivo). Esa misma contraseña va en `DB_PASS` del `.env`, con `DB_USER=dkbza_app`.
    Por último, crear el usuario del panel desde la terminal (pide la contraseña por teclado):
    ```bash
-   C:\xampp\php\php.exe clase7\database\crear_admin.php admin
+   C:\xampp\php\php.exe database\crear_admin.php admin
    ```
 6. Entrar desde el navegador a:
-   - Sitio (TP4): <http://localhost/Barberias/>
-   - Entrega de la Clase 5: <http://localhost/Barberias/clase5/>
-   - Entrega de la Clase 7: <http://localhost/Barberias/clase7/>
+   - Sitio: <http://localhost/Barberias/>
+   - Panel admin: <http://localhost/Barberias/login.php>
 
 ## 📸 Evidencia de funcionamiento
 
@@ -149,20 +131,19 @@ Barberias/
 
 ## 📝 Clase 5: Procesamiento de Formularios y Seguridad Web
 
-Todo el desarrollo de esta entrega está en la carpeta [`clase5/`](clase5/), que contiene una copia completa y funcional del sitio con los formularios procesados en el servidor con PHP.
+Los formularios del sitio se procesan en el servidor con PHP. Versión entregada: etiqueta [`tp5`](https://github.com/ArapaDillan10/Pagina-para-barberias/tree/tp5).
 
-🔗 **Probar localmente:** <http://localhost/Barberias/clase5/>
+🔗 **Probar localmente:** <http://localhost/Barberias/contacto.php> · <http://localhost/Barberias/servicios.php>
 
 ### 📂 Archivos modificados
 
 ```text
-clase5/
 ├── contacto.php     ← Formulario POST (contacto)
 ├── servicios.php    ← Formulario GET (buscador de servicios)
 └── css/styles.css   ← Estilos de alertas y buscador
 ```
 
-### 📨 Formulario POST: Contacto (`clase5/contacto.php`)
+### 📨 Formulario POST: Contacto (`contacto.php`)
 
 Formulario de contacto con los campos **nombre**, **email** y **mensaje**. Los datos se envían por `POST` a la misma página y se procesan en el servidor antes de mostrar el HTML.
 
@@ -191,7 +172,7 @@ Formulario de contacto con los campos **nombre**, **email** y **mensaje**. Los d
 
 ![Envío exitoso](capturas/09-post-exito.png)
 
-### 🔍 Formulario GET: Buscador de Servicios (`clase5/servicios.php`)
+### 🔍 Formulario GET: Buscador de Servicios (`servicios.php`)
 
 Buscador que filtra los servicios de la barbería por nombre o descripción. El término viaja en la URL (por ejemplo, `servicios.php?buscar=barba`), así la búsqueda se puede compartir o guardar.
 
@@ -214,13 +195,13 @@ Buscador que filtra los servicios de la barbería por nombre o descripción. El 
 
 ## 🗄️ Clase 7: Persistencia PHP-MySQL Segura (PDO + CRUD)
 
-Todo el desarrollo de esta entrega está en la carpeta [`clase7/`](clase7/), una copia del sitio de la Clase 5 conectada a una base de datos MySQL.
+El sitio se conectó a una base de datos MySQL. Versión entregada: etiqueta [`tp7`](https://github.com/ArapaDillan10/Pagina-para-barberias/tree/tp7).
 
-🔗 **Probar localmente:** <http://localhost/Barberias/clase7/> · Panel: <http://localhost/Barberias/clase7/login.php>
+🔗 **Probar localmente:** <http://localhost/Barberias/> · Panel: <http://localhost/Barberias/login.php>
 
 ### 🧩 Modelo de datos
 
-El modelo se diseñó con los criterios de la Clase 6: nombres en `snake_case`, clave primaria autoincremental, precios en `DECIMAL(10,2)`, un campo `estado` para mostrar u ocultar el servicio y fechas de auditoría. El script completo está en [`clase7/database/dkbza_db.sql`](clase7/database/dkbza_db.sql).
+El modelo se diseñó con los criterios de la Clase 6: nombres en `snake_case`, clave primaria autoincremental, precios en `DECIMAL(10,2)`, un campo `estado` para mostrar u ocultar el servicio y fechas de auditoría. El script completo está en [`database/dkbza_db.sql`](database/dkbza_db.sql).
 
 ```sql
 CREATE TABLE servicios (
@@ -235,7 +216,7 @@ CREATE TABLE servicios (
 ) ENGINE=InnoDB;
 ```
 
-### 🔌 Conexión segura (`clase7/config/conexion.php`)
+### 🔌 Conexión segura (`config/conexion.php`)
 
 - Conexión con **PDO** y charset `utf8mb4`.
 - Las credenciales se leen del `.env` con `env()`. No están escritas en el código y el `.env` no se sube al repositorio.
