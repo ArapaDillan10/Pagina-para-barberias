@@ -51,7 +51,9 @@ Barberias/
 │   ├── env.php              ← Lee las variables del .env
 │   └── conexion.php         ← Conexión PDO a MySQL
 ├── database/
-│   ├── dkbza_db.sql         ← Script de la base y datos iniciales
+│   ├── schema.sql           ← TP6: esquema relacional completo (tablas, PK, FK, índices)
+│   ├── consultas.sql        ← TP6: datos de prueba y consultas CRUD / JOIN
+│   ├── dkbza_db.sql         ← Script de la base y datos iniciales (TP7)
 │   ├── seguridad.sql        ← Tablas usuarios / login_intentos + usuario MySQL
 │   └── crear_admin.php      ← Crea el usuario del panel (solo por terminal)
 ├── includes/
@@ -84,9 +86,10 @@ Barberias/
 |---|---|---|
 | TP4: Migración a PHP con includes y `.env` | [`tp4`](https://github.com/ArapaDillan10/Pagina-para-barberias/tree/tp4) | [#3](https://github.com/ArapaDillan10/Pagina-para-barberias/pull/3) |
 | TP5: Formularios y seguridad web | [`tp5`](https://github.com/ArapaDillan10/Pagina-para-barberias/tree/tp5) | [#4](https://github.com/ArapaDillan10/Pagina-para-barberias/pull/4) |
+| TP6: Esquema relacional en MySQL | [`tp6`](https://github.com/ArapaDillan10/Pagina-para-barberias/tree/tp6) | [#8](https://github.com/ArapaDillan10/Pagina-para-barberias/pull/8) |
 | TP7: MySQL, PDO, CRUD y login seguro | [`tp7`](https://github.com/ArapaDillan10/Pagina-para-barberias/tree/tp7) | [#5](https://github.com/ArapaDillan10/Pagina-para-barberias/pull/5) · [#6](https://github.com/ArapaDillan10/Pagina-para-barberias/pull/6) |
 
-Hasta el TP7 cada entrega estaba en su propia carpeta (``, ``). Después se unificó todo en la raíz: las etiquetas permiten ver el código tal como se entregó.
+Hasta el TP7 cada entrega estaba en su propia carpeta (`clase5/`, `clase7/`). Después se unificó todo en la raíz: las etiquetas permiten ver el código tal como se entregó.
 
 ## 🚀 Instalación y ejecución local
 
@@ -190,6 +193,72 @@ Buscador que filtra los servicios de la barbería por nombre o descripción. El 
 **Búsqueda sin resultados:**
 
 ![Búsqueda sin resultados](capturas/11-get-sin-resultado.png)
+
+---
+
+## 🧩 Clase 6: Diseño del Esquema Relacional en MySQL
+
+Se diseñó el modelo de datos completo de la barbería, aplicando normalización hasta la 3FN.
+
+- Esquema: [`database/schema.sql`](database/schema.sql)
+- Datos de prueba y consultas: [`database/consultas.sql`](database/consultas.sql)
+
+### 📋 Tablas, claves primarias y foráneas
+
+| Tabla | Tipo | PK | FK | Para qué sirve |
+|---|---|---|---|---|
+| `usuarios` | Usuarios | `id` | — | Clientes y administradores (`email` único, `password` con hash, `rol` admin/usuario) |
+| `categorias` | Maestra | `id` | — | Agrupa los servicios: Corte, Barba, Combo |
+| `barberos` | Maestra | `id` | — | Profesionales que atienden los turnos |
+| `servicios` | Catálogo | `id` | `categoria_id` → `categorias.id` | Servicios que se muestran en el sitio y se administran desde el panel |
+| `turnos` | Principal del negocio | `id` | `usuario_id` → `usuarios.id`<br>`barbero_id` → `barberos.id` | Reserva de un cliente con un barbero en una fecha y hora |
+| `turno_servicio` | Detalle (N:M) | `id` | `turno_id` → `turnos.id`<br>`servicio_id` → `servicios.id` | Qué servicios incluye cada turno y a qué precio se cobraron |
+| `login_intentos` | Seguridad | `id` | — | Intentos fallidos de login, para frenar la fuerza bruta |
+
+**Relaciones:**
+- Un usuario tiene muchos turnos (1:N).
+- Un barbero atiende muchos turnos (1:N).
+- Una categoría agrupa muchos servicios (1:N).
+- Un turno puede incluir varios servicios y un servicio aparece en muchos turnos (N:M). Esa relación se resuelve con la tabla intermedia `turno_servicio`.
+
+![Diagrama de relaciones en phpMyAdmin](capturas/tp6-diagrama.png)
+
+### 📐 Normalización
+
+**Punto de partida:** sin normalizar, una reserva se anotaría en una sola fila, por ejemplo: `cliente, email, barbero, fecha, hora, servicios = "Corte, Barba", precios = "18000, 9000"`.
+
+- **1FN (valores atómicos, sin grupos repetidos):** cada celda guarda un solo valor. Los servicios de un turno ya no van separados por comas, sino que cada uno es una fila de `turno_servicio`. Todas las tablas tienen clave primaria `id`.
+- **2FN (sin dependencias parciales):** todo dato depende de la clave completa de su tabla. En el detalle, el nombre y la descripción del servicio dependen solo del servicio, no del par turno-servicio, así que van en `servicios`. En `turno_servicio` quedan únicamente `turno_id`, `servicio_id` y el precio cobrado.
+- **3FN (sin dependencias transitivas):** ningún dato depende de otro campo que no sea la clave. El nombre y el email del cliente dependen del cliente, no del turno, por eso van en `usuarios`. Lo mismo pasa con el barbero (`barberos`) y con la categoría del servicio (`categorias`). En `turnos` solo se guardan sus claves foráneas.
+
+**Decisiones de diseño:**
+- `turno_servicio.precio` guarda el precio **del momento del turno**. Si mañana cambia el precio del servicio, los turnos pasados conservan lo que se cobró. Es un dato histórico, no una copia redundante.
+- `UNIQUE (barbero_id, fecha, hora)` impide dar dos turnos al mismo barbero en el mismo horario, y `UNIQUE (turno_id, servicio_id)` impide repetir un servicio dentro de un turno.
+- Los `CHECK` limitan `rol` a `admin`/`usuario` y el estado del turno a `pendiente`, `confirmado`, `cancelado` o `completado`.
+- Las FK definen qué pasa al borrar:
+  - si se borra un turno, se borra su detalle (`CASCADE`);
+  - no se puede borrar un servicio o un barbero que tenga turnos (`RESTRICT`);
+  - si se borra una categoría, sus servicios quedan sin categoría (`SET NULL`).
+- Índices: `idx_servicios_estado`, porque el sitio siempre filtra los servicios activos, e `idx_turnos_fecha`, para buscar la agenda por día y hora.
+- Todas las tablas usan `INT AUTO_INCREMENT PRIMARY KEY`, nombres en `snake_case` y fechas de auditoría `created_at` / `updated_at`.
+
+> La tabla `usuarios` ya tiene la estructura que pide el TP8 (`nombre`, `email`, `password`, `rol`). El login del panel se adapta a esta tabla en el TP8.
+
+### 🧪 Consultas de prueba (`consultas.sql`)
+
+| Operación | Qué hace |
+|---|---|
+| `INSERT` | 3 categorías, 2 barberos, 3 servicios, 2 clientes, 3 turnos y su detalle |
+| `SELECT` + `WHERE` + `ORDER BY` | Servicios activos, del más caro al más barato |
+| `INNER JOIN` | Turnos con el nombre del cliente y del barbero; servicios y total de cada turno |
+| `UPDATE` + `WHERE` | Confirma el turno 1 y cancela el turno 3 |
+| `DELETE` + `WHERE` | Borra el turno cancelado; por `ON DELETE CASCADE` también se borra su detalle |
+
+![SELECT con WHERE y ORDER BY](capturas/tp6-select.png)
+
+![INNER JOIN de turnos, clientes y barberos](capturas/tp6-join.png)
+
+![Resultado del UPDATE y el DELETE](capturas/tp6-update-delete.png)
 
 ---
 
