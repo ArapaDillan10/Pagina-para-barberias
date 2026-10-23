@@ -1,7 +1,7 @@
 <?php
-  // Crea (o actualiza) un usuario del panel. Solo se ejecuta desde la terminal:
-  //   C:\xampp\php\php.exe database\crear_admin.php admin
-  // La contraseña se pide después, así no queda guardada en el historial de la terminal.
+  // Crea (o actualiza) un administrador. Solo se ejecuta desde la terminal:
+  //   C:\xampp\php\php.exe database\crear_admin.php admin@dkbza.com
+  // El nombre y la contraseña se piden después, así no quedan en el historial de la terminal.
 
   if (PHP_SAPI !== 'cli') {
     http_response_code(403);
@@ -9,23 +9,30 @@
   }
 
   if ($argc !== 2) {
-    exit("Uso: php crear_admin.php <usuario>\n");
+    exit("Uso: php crear_admin.php <email>\n");
   }
 
-  $usuario = trim($argv[1]);
+  $email = strtolower(trim($argv[1]));
 
-  if (!preg_match('/^[a-zA-Z0-9_]{3,50}$/', $usuario)) {
-    exit("El usuario debe tener entre 3 y 50 caracteres (letras, números o _).\n");
+  if (!filter_var($email, FILTER_VALIDATE_EMAIL) || strlen($email) > 150) {
+    exit("El email no es válido.\n");
   }
 
-  echo 'Contraseña para ' . $usuario . ' (mínimo 8 caracteres): ';
+  echo 'Nombre para mostrar: ';
+  $nombre = trim((string) fgets(STDIN));
+
+  if (!preg_match('/^[\p{L} ]{2,100}$/u', $nombre)) {
+    exit("El nombre debe tener entre 2 y 100 letras.\n");
+  }
+
+  echo 'Contraseña (mínimo 8 caracteres): ';
   $contrasena = trim((string) fgets(STDIN));
 
   echo 'Repetí la contraseña: ';
   $repetida = trim((string) fgets(STDIN));
 
-  if (strlen($contrasena) < 8) {
-    exit("\nLa contraseña debe tener al menos 8 caracteres.\n");
+  if (strlen($contrasena) < 8 || strlen($contrasena) > 72) {
+    exit("\nLa contraseña debe tener entre 8 y 72 caracteres.\n");
   }
 
   if ($contrasena !== $repetida) {
@@ -35,12 +42,15 @@
   // Ojo: config/env.php usa una variable $clave; por eso acá se llama $contrasena
   require_once __DIR__ . '/../config/conexion.php';
 
-  $sql = 'INSERT INTO usuarios (usuario, password_hash) VALUES (:usuario, :hash)
-          ON DUPLICATE KEY UPDATE password_hash = VALUES(password_hash), estado = 1';
+  $sql = "INSERT INTO usuarios (nombre, email, password, rol) VALUES (:nombre, :email, :password, 'admin')
+          ON DUPLICATE KEY UPDATE nombre = VALUES(nombre), password = VALUES(password), rol = 'admin', estado = 1";
   $stmt = $pdo->prepare($sql);
   $stmt->execute([
-    ':usuario' => $usuario,
-    ':hash'    => password_hash($contrasena, PASSWORD_DEFAULT),
+    ':nombre'   => $nombre,
+    ':email'    => $email,
+    ':password' => password_hash($contrasena, PASSWORD_BCRYPT),
   ]);
 
-  echo "\nUsuario '$usuario' listo. Ya podés entrar al panel.\n";
+  echo "\nAdministrador '$email' listo. Ya podés entrar al panel.\n";
+
+  

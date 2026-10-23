@@ -1254,3 +1254,13 @@ a.btn-danger {
   padding: 6px 12px;
   font-size: 0.85rem;
 }
+.form-ayuda {
+  margin-top: 1.25rem;
+  text-align: center;
+  font-size: 0.9rem;
+  color: #94a3b8;
+}
+
+.form-ayuda a {
+  color: #3b82f6;
+}

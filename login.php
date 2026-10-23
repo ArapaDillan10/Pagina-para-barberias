@@ -1,5 +1,5 @@
 <?php
-  $titulo_pagina = 'DKBZA | Ingreso al Panel';
+  $titulo_pagina = 'DKBZA | Iniciar sesión';
   require_once __DIR__ . '/includes/sesion.php';
   require_once __DIR__ . '/config/conexion.php';
   require_once __DIR__ . '/includes/funciones.php';
@@ -9,13 +9,13 @@
 
   header('Cache-Control: no-store, no-cache, must-revalidate');
 
-  if (!empty($_SESSION['admin_id'])) {
-    header('Location: admin.php');
+  if (isset($_SESSION['usuario_id'])) {
+    header('Location: ' . pagina_inicio_segun_rol());
     exit;
   }
 
   $ip      = $_SERVER['REMOTE_ADDR'] ?? 'desconocida';
-  $usuario = '';
+  $email   = '';
   $error   = '';
 
   // Limpia intentos viejos y cuenta los recientes de esta IP
@@ -29,35 +29,36 @@
   if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     csrf_verificar();
 
-    $usuario = trim(filter_input(INPUT_POST, 'usuario', FILTER_UNSAFE_RAW) ?? '');
-    $clave   = filter_input(INPUT_POST, 'clave', FILTER_UNSAFE_RAW) ?? '';
+    $email = strtolower(trim(filter_input(INPUT_POST, 'email', FILTER_UNSAFE_RAW) ?? ''));
+    $clave = filter_input(INPUT_POST, 'clave', FILTER_UNSAFE_RAW) ?? '';
 
     if ($intentos >= MAX_INTENTOS) {
       $error = 'Demasiados intentos fallidos. Esperá ' . MINUTOS_BLOQUEO . ' minutos y volvé a intentar.';
-    } elseif (empty($usuario) || $clave === '') {
-      $error = 'Completá el usuario y la contraseña.';
+    } elseif (empty($email) || $clave === '') {
+      $error = 'Completá el email y la contraseña.';
     } else {
-      $stmt = $pdo->prepare('SELECT id, usuario, password_hash FROM usuarios WHERE usuario = :usuario AND estado = 1');
-      $stmt->execute([':usuario' => $usuario]);
-      $admin = $stmt->fetch();
+      $stmt = $pdo->prepare('SELECT id, nombre, password, rol FROM usuarios WHERE email = :email AND estado = 1');
+      $stmt->execute([':email' => $email]);
+      $usuario = $stmt->fetch();
 
-      // Si el usuario no existe se verifica igual contra un hash falso, así la respuesta tarda lo mismo
-      $hash = $admin['password_hash'] ?? '$2y$10$GUQ76oqQhle2LO59U1ngo.NdRN4pzqK92mGrgDOQjk5HZ5BfWaY2.';
+      // Si el email no existe se verifica igual contra un hash falso, así la respuesta tarda lo mismo
+      $hash = $usuario['password'] ?? '$2y$10$GUQ76oqQhle2LO59U1ngo.NdRN4pzqK92mGrgDOQjk5HZ5BfWaY2.';
 
-      if (password_verify($clave, $hash) && $admin) {
+      if (password_verify($clave, $hash) && $usuario) {
         $stmt = $pdo->prepare('DELETE FROM login_intentos WHERE ip = :ip');
         $stmt->execute([':ip' => $ip]);
 
         session_regenerate_id(true);
-        $_SESSION['admin_id']         = $admin['id'];
-        $_SESSION['admin_usuario']    = $admin['usuario'];
+        $_SESSION['usuario_id']       = $usuario['id'];
+        $_SESSION['usuario_nombre']   = $usuario['nombre'];
+        $_SESSION['rol']              = $usuario['rol'];
         $_SESSION['ultima_actividad'] = time();
         unset($_SESSION['csrf_token']);
 
         $stmt = $pdo->prepare('UPDATE usuarios SET ultimo_acceso = NOW() WHERE id = :id');
-        $stmt->execute([':id' => $admin['id']]);
+        $stmt->execute([':id' => $usuario['id']]);
 
-        header('Location: admin.php');
+        header('Location: ' . pagina_inicio_segun_rol());
         exit;
       }
 
@@ -66,7 +67,7 @@
       $intentos++;
 
       $restantes = MAX_INTENTOS - $intentos;
-      $error = 'Usuario o contraseña incorrectos.';
+      $error = 'Email o contraseña incorrectos.';
 
       if ($restantes > 0) {
         $error .= ' Te quedan ' . $restantes . ' intento(s).';
@@ -77,12 +78,17 @@
   }
 
   $mensajes = [
-    'salida'   => 'Cerraste sesión correctamente.',
-    'expirada' => 'Tu sesión se cerró por inactividad. Volvé a ingresar.',
+    'salida'     => 'Cerraste sesión correctamente.',
+    'expirada'   => 'Tu sesión se cerró por inactividad. Volvé a ingresar.',
+    'registrado' => 'Tu cuenta se creó correctamente. Ya podés iniciar sesión.',
   ];
 
-  $msg    = filter_input(INPUT_GET, 'msg', FILTER_UNSAFE_RAW) ?? '';
-  $aviso  = $mensajes[$msg] ?? '';
+  $msg   = filter_input(INPUT_GET, 'msg', FILTER_UNSAFE_RAW) ?? '';
+  $aviso = $mensajes[$msg] ?? '';
+
+  if (!$error && (filter_input(INPUT_GET, 'error', FILTER_UNSAFE_RAW) ?? '') === 'acceso_denegado') {
+    $error = 'Tenés que iniciar sesión para ver esa página.';
+  }
 
   include('includes/header.php');
 ?>
@@ -102,7 +108,7 @@
           </span>
 
           <span class="brand-sub">
-            ADMIN PANEL
+            BARBER STUDIO
           </span>
 
         </div>
@@ -122,11 +128,11 @@
     <section class="login-card">
 
       <span class="section-tag">
-        ACCESO RESTRINGIDO
+        MI CUENTA
       </span>
 
       <h1>
-        Ingreso al panel
+        Iniciar sesión
       </h1>
 
       <?php if ($aviso): ?>
@@ -146,14 +152,15 @@
         <?php echo csrf_campo(); ?>
 
         <div class="form-grupo">
-          <label for="usuario">Usuario</label>
+          <label for="email">Email</label>
           <input
-            type="text"
-            id="usuario"
-            name="usuario"
+            type="email"
+            id="email"
+            name="email"
             class="wireframe-input"
             autocomplete="username"
-            value="<?php echo e($usuario); ?>"
+            maxlength="150"
+            value="<?php echo e($email); ?>"
           >
         </div>
 
@@ -173,6 +180,10 @@
         </button>
 
       </form>
+
+      <p class="form-ayuda">
+        ¿No tenés cuenta? <a href="registro.php">Registrate</a>
+      </p>
 
     </section>
 

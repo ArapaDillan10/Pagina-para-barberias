@@ -10,7 +10,7 @@
           · <?php echo htmlspecialchars(env('APP_EMAIL')); ?>
         </span>
       <a href="login.php" class="btn-ghost-sm">
-        🔒 Admin
+        🔒 Ingresar
       </a>
 
     </div>

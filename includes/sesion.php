@@ -41,13 +41,22 @@
   function cerrar_sesion() {
     $_SESSION = [];
 
-    setcookie(session_name(), '', [
-      'expires'  => time() - 3600,
-      'path'     => '/',
-      'httponly' => true,
-      'samesite' => 'Strict',
-    ]);
+    if (ini_get('session.use_cookies')) {
+      $params = session_get_cookie_params();
+      setcookie(session_name(), '', [
+        'expires'  => time() - 42000,
+        'path'     => $params['path'],
+        'domain'   => $params['domain'],
+        'secure'   => $params['secure'],
+        'httponly' => $params['httponly'],
+        'samesite' => $params['samesite'],
+      ]);
+    }
 
     session_destroy();
+  }
+
+  function pagina_inicio_segun_rol() {
+    return ($_SESSION['rol'] ?? '') === 'admin' ? 'admin.php' : 'mi_cuenta.php';
   }
 ?>
