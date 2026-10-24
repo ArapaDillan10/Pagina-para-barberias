@@ -17,8 +17,8 @@ INSERT INTO categorias (nombre, descripcion) VALUES
 
 -- Tabla maestra: barberos
 INSERT INTO barberos (nombre, especialidad) VALUES
-('Dillan', 'Fades y diseños'),
-('Lucas', 'Barba y navaja');
+('Dillan Arapa', 'Master Barber & Founder'),
+('Mateo Nieva', 'Fade Specialist & Senior');
 
 -- servicios (los mismos que ya mostraba el sitio, ahora con su categoría)
 INSERT INTO servicios (categoria_id, nombre, descripcion, precio, imagen) VALUES

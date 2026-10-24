@@ -33,8 +33,31 @@
     return $errores;
   }
 
+  function validar_barbero($nombre, $especialidad) {
+    $errores = [];
+
+    if ($nombre === '') {
+      $errores[] = 'El nombre del barbero es obligatorio.';
+    } elseif (!preg_match('/^.{2,100}$/us', $nombre)) {
+      $errores[] = 'El nombre debe tener entre 2 y 100 caracteres.';
+    }
+
+    if (!preg_match('/^.{0,100}$/us', $especialidad)) {
+      $errores[] = 'La especialidad no puede superar los 100 caracteres.';
+    }
+
+    return $errores;
+  }
+
+  // Iniciales para mostrar cuando el barbero no tiene foto: "Dillan Arapa" -> "DA"
+  function iniciales($nombre) {
+    preg_match_all('/(?<=^|\s)\p{L}/u', (string) $nombre, $letras);
+    return strtoupper(implode('', array_slice($letras[0], 0, 2)));
+  }
+
   // Devuelve null si no se eligió imagen, ['ruta' => ...] si se guardó o ['error' => ...] si falló.
-  function subir_imagen($archivo) {
+  // $carpeta: subcarpeta de img/ donde se guarda ('servicios' o 'barberos').
+  function subir_imagen($archivo, $carpeta = 'servicios') {
     if (!isset($archivo) || $archivo['error'] === UPLOAD_ERR_NO_FILE) {
       return null;
     }
@@ -59,25 +82,69 @@
       return ['error' => 'El archivo debe ser una imagen JPG, PNG o WEBP.'];
     }
 
-    $carpeta = __DIR__ . '/../img/servicios/';
+    $destino = __DIR__ . '/../img/' . $carpeta . '/';
 
-    if (!is_dir($carpeta)) {
-      mkdir($carpeta, 0755, true);
+    if (!is_dir($destino)) {
+      mkdir($destino, 0755, true);
     }
 
-    $nombre_archivo = uniqid('servicio_') . '.' . $tipos_permitidos[$info[2]];
+    $nombre_archivo = bin2hex(random_bytes(8)) . '.' . $tipos_permitidos[$info[2]];
 
-    if (!move_uploaded_file($archivo['tmp_name'], $carpeta . $nombre_archivo)) {
+    if (!move_uploaded_file($archivo['tmp_name'], $destino . $nombre_archivo)) {
       return ['error' => 'No se pudo guardar la imagen en el servidor.'];
     }
 
-    return ['ruta' => 'servicios/' . $nombre_archivo];
+    return ['ruta' => $carpeta . '/' . $nombre_archivo];
   }
 
-  // Solo borra imágenes subidas desde el panel (img/servicios/), nunca las originales del sitio.
+  // Guarda el comprobante de seña en var/comprobantes/ (fuera del alcance público).
+  // Solo acepta PDF o imagen real (JPG, PNG, WEBP) leyendo la firma del archivo:
+  // un .php o .html renombrado queda rechazado.
+  function guardar_comprobante($archivo, $turno_id) {
+    if (!isset($archivo) || $archivo['error'] !== UPLOAD_ERR_OK) {
+      return null;
+    }
+
+    if ($archivo['size'] > 4 * 1024 * 1024) {
+      return ['error' => 'El comprobante no puede pesar más de 4 MB.'];
+    }
+
+    $tipos_permitidos = [
+      'image/jpeg'      => 'jpg',
+      'image/png'       => 'png',
+      'image/webp'      => 'webp',
+      'application/pdf' => 'pdf',
+    ];
+
+    $finfo = finfo_open(FILEINFO_MIME_TYPE);
+    $mime  = finfo_file($finfo, $archivo['tmp_name']);
+    finfo_close($finfo);
+
+    if (!isset($tipos_permitidos[$mime])) {
+      return ['error' => 'El comprobante tiene que ser una imagen o un PDF.'];
+    }
+
+    $destino = __DIR__ . '/../var/comprobantes/';
+
+    if (!is_dir($destino)) {
+      mkdir($destino, 0755, true);
+    }
+
+    $nombre_archivo = 'turno-' . $turno_id . '-' . bin2hex(random_bytes(6)) . '.' . $tipos_permitidos[$mime];
+
+    if (!move_uploaded_file($archivo['tmp_name'], $destino . $nombre_archivo)) {
+      return ['error' => 'No se pudo guardar el comprobante en el servidor.'];
+    }
+
+    return ['archivo' => $nombre_archivo];
+  }
+
+  // Solo borra imágenes subidas desde el panel (img/servicios/ o img/barberos/), nunca las originales del sitio.
   function borrar_imagen($ruta) {
-    if (!empty($ruta) && strpos($ruta, 'servicios/') === 0) {
-      $archivo = __DIR__ . '/../img/servicios/' . basename($ruta);
+    $carpeta = explode('/', (string) $ruta)[0];
+
+    if (in_array($carpeta, ['servicios', 'barberos'], true)) {
+      $archivo = __DIR__ . '/../img/' . $carpeta . '/' . basename($ruta);
 
       if (is_file($archivo)) {
         unlink($archivo);

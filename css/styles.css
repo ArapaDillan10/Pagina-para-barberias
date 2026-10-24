@@ -1264,3 +1264,209 @@ a.btn-danger {
 .form-ayuda a {
   color: #3b82f6;
 }
+/* ================================================================
+   RESERVAS REALES
+================================================================ */
+
+.form-reserva fieldset {
+  border: none;
+  padding: 0;
+  margin: 0 0 2rem 0;
+  min-width: 0;
+}
+
+.barber-card input,
+.time-slot input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.barber-card,
+.time-slot {
+  position: relative;
+  display: block;
+  text-align: center;
+}
+
+.barber-card:focus-within,
+.time-slot:focus-within,
+.servicio-opcion:focus-within {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+.servicios-lista {
+  display: grid;
+  gap: 0.6rem;
+  text-align: left;
+}
+
+.servicio-opcion {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  background: #060B18;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  padding: 0.8rem 1rem;
+  cursor: pointer;
+}
+
+.servicio-opcion:has(input:checked) {
+  border-color: #E63946;
+  background: rgba(230, 57, 70, 0.05);
+}
+
+.servicio-opcion span { flex: 1; }
+
+.reserva-login p { margin-bottom: 1rem; }
+
+.flex-center { justify-content: center; gap: 1rem; }
+
+.booking-status.estado-pendiente  { background: rgba(255, 193, 7, .10); color: #ffc107; }
+.booking-status.estado-confirmado { background: rgba(59, 130, 246, .12); color: #60a5fa; }
+.booking-status.estado-completado { background: rgba(69, 224, 111, .10); color: #45e06f; }
+.booking-status.estado-cancelado  { background: rgba(230, 57, 70, .12); color: #f87171; }
+
+.form-inline {
+  display: inline-flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.btn-mini {
+  padding: 4px 10px;
+  font-size: 11px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+}
+
+.btn-mini:hover { border-color: #fff; }
+.btn-mini.peligro { border-color: rgba(230, 57, 70, .6); color: #f87171; }
+
+.filtro-turnos {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+/* ================================================================
+   BARBEROS CON FOTO
+================================================================ */
+
+.staff-foto {
+  width: calc(100% + 3rem);
+  max-width: none;
+  height: 420px;
+  object-fit: cover;
+  display: block;
+  margin: -1.5rem -1.5rem 1.25rem -1.5rem;
+  border-radius: 6px 6px 0 0;
+}
+
+.barber-foto {
+  object-fit: cover;
+  padding: 0;
+}
+
+.avatar-iniciales {
+  width: 64px;
+  height: 64px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.05);
+  font-family: 'JetBrains Mono', monospace;
+  color: #9CA3AF;
+}
+
+.avatar-placeholder {
+  width: calc(100% + 3rem);
+  height: 380px;
+  margin: -1.5rem -1.5rem 1.25rem -1.5rem;
+  border-radius: 6px 6px 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #0B132B, #1C2942);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 3rem;
+  color: #9CA3AF;
+  letter-spacing: 0.1em;
+}
+
+/* ─── Calendario de reservas ─── */
+.calendar-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.calendar-nav .month-title { margin: 0; }
+
+.calendar-flecha {
+  background: none;
+  border: none;
+  color: #f3f4f6;
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 0.2rem 0.5rem;
+}
+
+.calendar-flecha:disabled { opacity: 0.2; cursor: not-allowed; }
+
+.calendar-days .day { background: none; border: none; font: inherit; padding: 0.4rem 0; }
+
+.paso-aviso {
+  color: #f87171;
+  font-size: 0.85rem;
+  min-height: 1.2em;
+  margin: 0;
+}
+
+.form-group label.servicio-opcion {
+  font-family: inherit;
+  font-size: 0.95rem;
+  color: #fff;
+  text-transform: none;
+  letter-spacing: normal;
+  margin: 0;
+}
+
+.sena-box {
+  margin-top: 1.5rem;
+  padding: 1rem 1.2rem;
+  background: rgba(255, 193, 7, 0.05);
+  border: 1px dashed rgba(255, 193, 7, 0.35);
+  border-radius: 6px;
+}
+
+.sena-box p { font-size: 0.9rem; color: #d1d5db; margin: 0 0 1rem 0; }
+
+.sena-box .step-hint { color: #ffc107; margin-bottom: 0.6rem; }
+
+.sena-ayuda { color: #9ca3af; font-size: 0.75rem; display: block; margin-top: 0.4rem; }
+
+input[type="file"].wireframe-input { padding: 0.6rem; }
+
+.link-comprobante {
+  color: #60a5fa;
+  font-size: 0.8rem;
+  text-decoration: underline;
+}
+
+.nav-saludo {
+  color: #d1d5db;
+  font-size: 0.85rem;
+  margin-right: 0.75rem;
+  white-space: nowrap;
+}

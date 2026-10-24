@@ -1,4 +1,11 @@
-# Variables de entorno (datos privados)
 .env
-img/servicios/*
-!img/servicios/.htaccess
+*.log
+Thumbs.db
+desktop.ini
+
+# Fotos de barberos subidas desde el panel
+img/barberos/*
+!img/barberos/.htaccess
+
+# Comprobantes de seña (archivos privados del cliente)
+var/comprobantes/

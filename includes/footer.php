@@ -9,8 +9,8 @@
           © 2026 <?php echo htmlspecialchars(env('APP_NAME')); ?> · Todos los derechos reservados
           · <?php echo htmlspecialchars(env('APP_EMAIL')); ?>
         </span>
-      <a href="login.php" class="btn-ghost-sm">
-        🔒 Ingresar
+      <a href="<?php echo isset($_SESSION['usuario_id']) ? 'admin.php' : 'login.php?admin=1'; ?>" class="btn-ghost-sm">
+        🔒 Panel admin
       </a>
 
     </div>

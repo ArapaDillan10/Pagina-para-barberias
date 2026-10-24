@@ -58,6 +58,7 @@ CREATE TABLE barberos (
   id            INT AUTO_INCREMENT PRIMARY KEY,
   nombre        VARCHAR(100) NOT NULL,
   especialidad  VARCHAR(100),
+  foto          VARCHAR(255),
   estado        TINYINT NOT NULL DEFAULT 1,
   created_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -91,16 +92,21 @@ CREATE TABLE turnos (
   fecha          DATE NOT NULL,
   hora           TIME NOT NULL,
   estado         VARCHAR(20) NOT NULL DEFAULT 'pendiente',
+  telefono       VARCHAR(30),
+  sena_monto     DECIMAL(10,2),
+  sena_comprobante VARCHAR(255),
   observaciones  VARCHAR(255),
   created_at     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at     TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  -- 1 si el turno ocupa el horario, NULL si está cancelado (UNIQUE admite varios NULL)
+  ocupa          TINYINT AS (IF(estado = 'cancelado', NULL, 1)) STORED,
   CONSTRAINT fk_turnos_usuario
     FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
     ON UPDATE CASCADE ON DELETE CASCADE,
   CONSTRAINT fk_turnos_barbero
     FOREIGN KEY (barbero_id) REFERENCES barberos(id)
     ON UPDATE CASCADE ON DELETE RESTRICT,
-  CONSTRAINT uq_turnos_barbero_horario UNIQUE (barbero_id, fecha, hora),
+  CONSTRAINT uq_turnos_horario_activo UNIQUE (barbero_id, fecha, hora, ocupa),
   CONSTRAINT chk_turnos_estado CHECK (estado IN ('pendiente', 'confirmado', 'cancelado', 'completado'))
 ) ENGINE=InnoDB;
 

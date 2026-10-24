@@ -28,259 +28,178 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
 
-  // 2. SISTEMA DE RESERVA EN 3 PASOS (CALENDARIO AUTOMÁTICO REAL)
-  const mesesNombres = [
-    "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
-    "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
-  ];
+  // 2. RESERVAS EN 3 PASOS: calendario real y horarios ocupados desde la base
+  const formReserva = document.getElementById('form-reserva');
+  if (formReserva) {
+    const MESES = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+      'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
 
-  // Fecha real actual (Octubre 2026)
-  const realNow = new Date(2026, 9, 3); 
-  let viewingYear = realNow.getFullYear();
-  let viewingMonth = realNow.getMonth(); // 9 (Octubre)
+    const inputFecha = document.getElementById('fecha');
+    const gridDias = document.getElementById('calendar-days');
+    const tituloMes = document.getElementById('month-title');
+    const btnAnterior = document.getElementById('mes-anterior');
+    const btnSiguiente = document.getElementById('mes-siguiente');
+    const estadoHorarios = document.getElementById('horarios-estado');
+    const radiosHora = formReserva.querySelectorAll('input[name="hora"]');
 
-  let selectedBarber = 'Mateo';
-  let selectedDate = `\({mesesNombres[realNow.getMonth()]}\){realNow.getDate()}`;
-  let selectedTime = '09:00h';
+    const aFecha = (texto) => {
+      const [a, m, d] = texto.split('-').map(Number);
+      return new Date(a, m - 1, d);
+    };
+    const aTexto = (f) =>
+      `${f.getFullYear()}-${String(f.getMonth() + 1).padStart(2, '0')}-${String(f.getDate()).padStart(2, '0')}`;
 
-  // Manejo de Turnos Ocupados con localStorage
-  function obtenerTurnosOcupados() {
-    let turnos = localStorage.getItem('dkbza_turnos_ocupados');
-    return turnos ? JSON.parse(turnos) : {};
-  }
+    const hoy = aFecha(formReserva.dataset.hoy);
+    const limite = aFecha(formReserva.dataset.limite);
+    const cerrados = formReserva.dataset.cerrados.split(',').map(Number);
 
-  function guardarTurnoOcupado(barbero, fecha, hora) {
-    let turnos = obtenerTurnosOcupados();
-    let clave = `\({barbero}-\){fecha}-${hora}`;
-    turnos[clave] = true;
-    localStorage.setItem('dkbza_turnos_ocupados', JSON.stringify(turnos));
-  }
+    let mesVisible = inputFecha.value ? aFecha(inputFecha.value) : new Date(hoy);
+    mesVisible.setDate(1);
 
-  function actualizarHorasDisponibles() {
-    const timeSlots = document.querySelectorAll('.time-slot');
-    const turnosOcupados = obtenerTurnosOcupados();
+    const barberoElegido = () => formReserva.querySelector('input[name="barbero"]:checked');
+    const horaElegida = () => formReserva.querySelector('input[name="hora"]:checked');
 
-    timeSlots.forEach(slot => {
-      const hora = slot.textContent.trim();
-      let clave = `\({selectedBarber}-\){selectedDate}-${hora}`;
+    const marcarSeleccion = () => {
+      formReserva.querySelectorAll('.barber-card, .time-slot').forEach(label => {
+        label.classList.toggle('selected', label.querySelector('input').checked);
+      });
+    };
 
-      slot.classList.remove('disabled', 'selected');
-      slot.style.pointerEvents = 'auto';
-      slot.style.opacity = '1';
+    const porcentajeSena = Number(formReserva.dataset.sena) || 50;
+    const totalServicios = () =>
+      [...formReserva.querySelectorAll('input[name="servicios[]"]:checked')]
+        .reduce((suma, c) => suma + Number(c.dataset.precio || 0), 0);
+    const aDinero = (n) => '$' + n.toLocaleString('es-AR', { maximumFractionDigits: 0 });
 
-      if (turnosOcupados[clave]) {
-        slot.classList.add('disabled');
-        slot.style.pointerEvents = 'none';
-        slot.style.opacity = '0.3';
+    const actualizarResumen = () => {
+      const barbero = barberoElegido();
+      const hora = horaElegida();
+      const fecha = inputFecha.value ? aFecha(inputFecha.value) : null;
+      document.getElementById('summary-barber').textContent = `✂ ${barbero ? barbero.dataset.nombre : '—'}`;
+      document.getElementById('summary-date').textContent =
+        `📅 ${fecha ? `${MESES[fecha.getMonth()]} ${fecha.getDate()}` : '—'}`;
+      document.getElementById('summary-time').textContent = `⏰ ${hora ? hora.value + 'h' : '—'}`;
+      document.getElementById('sena-monto').textContent =
+        totalServicios() ? `${aDinero(totalServicios() * porcentajeSena / 100)} (${porcentajeSena}% de ${aDinero(totalServicios())})` : '—';
+    };
+
+    const actualizarHorarios = async () => {
+      const barbero = barberoElegido();
+      if (!barbero || !inputFecha.value) {
+        estadoHorarios.textContent = 'ELEGÍ UN DÍA';
+        radiosHora.forEach(radio => {
+          radio.disabled = true;
+          radio.parentElement.classList.add('disabled');
+        });
+        return;
       }
+
+      estadoHorarios.textContent = 'BUSCANDO HORARIOS...';
+      const params = new URLSearchParams({ barbero: barbero.value, fecha: inputFecha.value });
+
+      try {
+        const respuesta = await fetch(`horarios.php?${params}`);
+        const datos = await respuesta.json();
+        const ocupados = datos.ocupados || [];
+
+        radiosHora.forEach(radio => {
+          const ocupado = ocupados.includes(radio.value);
+          radio.disabled = ocupado;
+          radio.parentElement.classList.toggle('disabled', ocupado);
+          if (ocupado) radio.checked = false;
+        });
+
+        estadoHorarios.textContent = datos.cerrado ? 'ESE DÍA NO ATENDEMOS' : 'HORARIOS DISPONIBLES';
+      } catch (error) {
+        estadoHorarios.textContent = 'NO SE PUDIERON CARGAR LOS HORARIOS';
+      }
+      marcarSeleccion();
+      actualizarResumen();
+    };
+
+    const renderCalendario = () => {
+      const anio = mesVisible.getFullYear();
+      const mes = mesVisible.getMonth();
+      tituloMes.textContent = `${MESES[mes].toUpperCase()} ${anio}`;
+
+      let html = ['D', 'L', 'M', 'X', 'J', 'V', 'S'].map(d => `<span>${d}</span>`).join('');
+      const primerDia = new Date(anio, mes, 1).getDay();
+      const totalDias = new Date(anio, mes + 1, 0).getDate();
+
+      for (let i = 0; i < primerDia; i++) html += '<span class="empty"></span>';
+
+      for (let dia = 1; dia <= totalDias; dia++) {
+        const fecha = new Date(anio, mes, dia);
+        const texto = aTexto(fecha);
+        const habilitado = fecha >= hoy && fecha <= limite && !cerrados.includes(fecha.getDay());
+        const elegido = texto === inputFecha.value ? ' selected' : '';
+
+        html += habilitado
+          ? `<button type="button" class="day${elegido}" data-fecha="${texto}">${dia}</button>`
+          : `<span class="day past-day">${dia}</span>`;
+      }
+
+      gridDias.innerHTML = html;
+      btnAnterior.disabled = new Date(anio, mes, 0) < hoy;
+      btnSiguiente.disabled = new Date(anio, mes + 1, 1) > limite;
+    };
+
+    gridDias.addEventListener('click', (e) => {
+      const dia = e.target.closest('button.day');
+      if (!dia) return;
+      inputFecha.value = dia.dataset.fecha;
+      renderCalendario();
+      actualizarHorarios();
     });
 
-    const primerLibre = document.querySelector('.time-slot:not(.disabled)');
-    if (primerLibre && !document.querySelector('.time-slot.selected:not(.disabled)')) {
-      document.querySelectorAll('.time-slot').forEach(s => s.classList.remove('selected'));
-      primerLibre.classList.add('selected');
-      selectedTime = primerLibre.textContent.trim();
-      const summaryTime = document.getElementById('summary-time');
-      if (summaryTime) summaryTime.textContent = `⏰ ${selectedTime}`;
-    }
-  }
+    btnAnterior.addEventListener('click', () => {
+      mesVisible.setMonth(mesVisible.getMonth() - 1);
+      renderCalendario();
+    });
 
-  // Generador Automático del Calendario
-  function renderCalendar() {
-    const calendarGrid = document.getElementById('calendar-days-grid');
-    const monthTitle = document.getElementById('month-title');
-    if (!calendarGrid || !monthTitle) return;
+    btnSiguiente.addEventListener('click', () => {
+      mesVisible.setMonth(mesVisible.getMonth() + 1);
+      renderCalendario();
+    });
 
-    monthTitle.textContent = `\({mesesNombres[viewingMonth].toUpperCase()}\){viewingYear}`;
-
-    const firstDayIndex = new Date(viewingYear, viewingMonth, 1).getDay();
-    const totalDays = new Date(viewingYear, viewingMonth + 1, 0).getDate();
-
-    let daysHTML = `
-      D
-      L
-      M
-      X
-      J
-      V
-      S
-    `;
-
-    // Espacios vacíos antes del día 1
-    for (let i = 0; i < firstDayIndex; i++) {
-      daysHTML += ``;
-    }
-
-    const isCurrentMonthYear = (viewingYear === realNow.getFullYear() && viewingMonth === realNow.getMonth());
-
-    for (let day = 1; day <= totalDays; day++) {
-      let isPast = isCurrentMonthYear && day < realNow.getDate();
-      
-      if (isPast) {
-        daysHTML += `${day}`;
-      } else {
-        let isToday = (isCurrentMonthYear && day === realNow.getDate()) || (!isCurrentMonthYear && day === 1);
-        let selectedClass = isToday ? "selected" : "";
-        daysHTML += `${day}`;
+    const irAPaso = (paso) => {
+      for (let i = 1; i <= 3; i++) {
+        document.getElementById(`step-${i}`).classList.toggle('active', i === paso);
+        document.getElementById(`step-dot-${i}`).className =
+          'step-indicator' + (i === paso ? ' active' : i < paso ? ' completed' : '');
+        document.getElementById(`step-lbl-${i}`).classList.toggle('active', i === paso);
       }
-    }
+      actualizarResumen();
+    };
 
-    calendarGrid.innerHTML = daysHTML;
+    formReserva.querySelectorAll('[data-ir]').forEach(boton => {
+      boton.addEventListener('click', () => {
+        const destino = Number(boton.dataset.ir);
+        document.getElementById('aviso-1').textContent = '';
+        document.getElementById('aviso-2').textContent = '';
 
-    // Seleccionar por defecto el primer día válido
-    const firstValidDay = calendarGrid.querySelector('.day:not(.past-day):not(.empty)');
-    if (firstValidDay) {
-      calendarGrid.querySelectorAll('.day').forEach(d => d.classList.remove('selected'));
-      firstValidDay.classList.add('selected');
-      selectedDate = `\({mesesNombres[viewingMonth]}\){firstValidDay.getAttribute('data-day')}`;
-      const summaryDate = document.getElementById('summary-date');
-      if (summaryDate) summaryDate.textContent = `📅 ${selectedDate}`;
-    }
-
-    // Eventos de click en los días válidos
-    calendarGrid.querySelectorAll('.day:not(.past-day)').forEach(dayEl => {
-      dayEl.addEventListener('click', () => {
-        calendarGrid.querySelectorAll('.day').forEach(d => d.classList.remove('selected'));
-        dayEl.classList.add('selected');
-        
-        const dayNum = dayEl.getAttribute('data-day');
-        selectedDate = `\({mesesNombres[viewingMonth]}\){dayNum}`;
-        
-        const summaryDate = document.getElementById('summary-date');
-        if (summaryDate) summaryDate.textContent = `📅 ${selectedDate}`;
-
-        actualizarHorasDisponibles();
+        if (destino >= 2 && !barberoElegido()) {
+          document.getElementById('aviso-1').textContent = 'Elegí un barbero para continuar.';
+          return irAPaso(1);
+        }
+        if (destino === 3 && (!inputFecha.value || !horaElegida())) {
+          document.getElementById('aviso-2').textContent = 'Elegí un día y un horario para continuar.';
+          return;
+        }
+        irAPaso(destino);
       });
     });
-  }
 
-  // Controles para cambiar de mes (Flechas en el título)
-  const monthBox = document.querySelector('.calendar-box');
-  if (monthBox && !document.getElementById('prev-month')) {
-    const titleContainer = document.getElementById('month-title');
-    if (titleContainer) {
-      const wrapper = document.createElement('div');
-      wrapper.style.display = 'flex';
-      wrapper.style.justifyContent = 'space-between';
-      wrapper.style.alignItems = 'center';
-      wrapper.style.width = '100%';
-      wrapper.style.marginBottom = '10px';
-
-      const btnPrev = document.createElement('button');
-      btnPrev.innerHTML = '◄';
-      btnPrev.id = 'prev-month';
-      btnPrev.style.cssText = 'background:none; border:none; color:#f3f4f6; cursor:pointer; font-size:16px;';
-
-      const btnNext = document.createElement('button');
-      btnNext.innerHTML = '►';
-      btnNext.id = 'next-month';
-      btnNext.style.cssText = 'background:none; border:none; color:#f3f4f6; cursor:pointer; font-size:16px;';
-
-      titleContainer.parentNode.replaceChild(wrapper, titleContainer);
-      wrapper.appendChild(btnPrev);
-      wrapper.appendChild(titleContainer);
-      wrapper.appendChild(btnNext);
-
-      btnPrev.addEventListener('click', () => {
-        if (viewingYear === realNow.getFullYear() && viewingMonth <= realNow.getMonth()) return;
-
-        viewingMonth--;
-        if (viewingMonth < 0) {
-          viewingMonth = 11;
-          viewingYear--;
-        }
-        renderCalendar();
-        actualizarHorasDisponibles();
-      });
-
-      btnNext.addEventListener('click', () => {
-        viewingMonth++;
-        if (viewingMonth > 11) {
-          viewingMonth = 0;
-          viewingYear++;
-        }
-        renderCalendar();
-        actualizarHorasDisponibles();
-      });
-    }
-  }
-
-  // Inicializar calendario
-  renderCalendar();
-
-  // Stepper (Pasos)
-  const goToStep = (stepNumber) => {
-    document.querySelectorAll('.step-content').forEach(el => el.classList.remove('active'));
-    const targetStep = document.getElementById(`step-${stepNumber}`);
-    if (targetStep) targetStep.classList.add('active');
-
-    for (let i = 1; i <= 3; i++) {
-      const dot = document.getElementById(`step-dot-${i}`);
-      if (dot) {
-        if (i === stepNumber) {
-          dot.className = 'step-indicator active';
-        } else if (i < stepNumber) {
-          dot.className = 'step-indicator completed';
-        } else {
-          dot.className = 'step-indicator';
-        }
-      }
-    }
-  };
-
-  document.getElementById('btn-next-1')?.addEventListener('click', () => {
-    goToStep(2);
-    actualizarHorasDisponibles();
-  });
-  document.getElementById('btn-back-2')?.addEventListener('click', () => goToStep(1));
-  document.getElementById('btn-next-2')?.addEventListener('click', () => goToStep(3));
-  document.getElementById('btn-back-3')?.addEventListener('click', () => goToStep(2));
-
-  // Selección de Barbero
-  document.querySelectorAll('.barber-card').forEach(card => {
-    card.addEventListener('click', () => {
-      document.querySelectorAll('.barber-card').forEach(c => c.classList.remove('selected'));
-      card.classList.add('selected');
-      selectedBarber = card.getAttribute('data-barber') || 'Mateo';
-      
-      const summaryBarber = document.getElementById('summary-barber');
-      if (summaryBarber) summaryBarber.textContent = `✂ ${selectedBarber}`;
-
-      actualizarHorasDisponibles();
+    formReserva.addEventListener('change', (e) => {
+      marcarSeleccion();
+      actualizarResumen();
+      if (e.target.name === 'barbero') actualizarHorarios();
     });
-  });
 
-  // Selección de Horario
-  document.querySelectorAll('.time-slot').forEach(slot => {
-    slot.addEventListener('click', () => {
-      if (slot.classList.contains('disabled')) return;
-      document.querySelectorAll('.time-slot').forEach(s => s.classList.remove('selected'));
-      slot.classList.add('selected');
-      selectedTime = slot.textContent.trim();
-      
-      const summaryTime = document.getElementById('summary-time');
-      if (summaryTime) summaryTime.textContent = `⏰ ${selectedTime}`;
-    });
-  });
-
-  // Envío del Formulario Final (Corregido)
-  const finalForm = document.getElementById('final-booking-form');
-  if (finalForm) {
-    finalForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const name = document.getElementById('booking-name').value;
-      const phone = document.getElementById('booking-phone').value;
-      const service = document.getElementById('booking-service').value || 'Sin especificar';
-
-      guardarTurnoOcupado(selectedBarber, selectedDate, selectedTime);
-
-      alert(`¡Reserva confirmada!\n\nCliente: \({name}\nBarbero:\){selectedBarber}\nFecha: \({selectedDate} a las\){selectedTime}\nServicio: ${service}`);
-      
-      finalForm.reset();
-      goToStep(1);
-      renderCalendar();
-      actualizarHorasDisponibles();
-    });
+    renderCalendario();
+    marcarSeleccion();
+    actualizarHorarios();
+    irAPaso(Number(formReserva.dataset.paso) || 1);
   }
 
   // 3. FORMULARIO DE CONTACTO

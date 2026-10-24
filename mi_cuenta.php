@@ -3,12 +3,14 @@
   require_once __DIR__ . '/includes/auth_guard.php';
   require_once __DIR__ . '/config/conexion.php';
   require_once __DIR__ . '/includes/funciones.php';
+  require_once __DIR__ . '/includes/turnos.php';
 
   $stmt = $pdo->prepare('SELECT nombre, email, rol, ultimo_acceso, created_at FROM usuarios WHERE id = :id');
   $stmt->execute([':id' => $_SESSION['usuario_id']]);
   $usuario = $stmt->fetch();
 
-  $sql = "SELECT t.fecha, t.hora, t.estado, b.nombre AS barbero,
+  $sql = "SELECT t.id, t.fecha, t.hora, t.estado, t.sena_monto, t.sena_comprobante, b.nombre AS barbero,
+                 (t.estado IN ('pendiente', 'confirmado') AND TIMESTAMP(t.fecha, t.hora) > NOW()) AS cancelable,
                  GROUP_CONCAT(s.nombre ORDER BY s.nombre SEPARATOR ', ') AS servicios,
                  SUM(ts.precio) AS total
           FROM turnos t
@@ -16,13 +18,20 @@
           INNER JOIN turno_servicio ts ON ts.turno_id = t.id
           INNER JOIN servicios s       ON s.id = ts.servicio_id
           WHERE t.usuario_id = :usuario_id
-          GROUP BY t.id, t.fecha, t.hora, t.estado, b.nombre
+          GROUP BY t.id, t.fecha, t.hora, t.estado, t.sena_monto, t.sena_comprobante, b.nombre
           ORDER BY t.fecha DESC, t.hora DESC";
   $stmt = $pdo->prepare($sql);
   $stmt->execute([':usuario_id' => $_SESSION['usuario_id']]);
   $turnos = $stmt->fetchAll();
 
   $sin_permiso = (filter_input(INPUT_GET, 'error', FILTER_UNSAFE_RAW) ?? '') === 'sin_permiso';
+
+  $mensajes = [
+    'reservado'    => ['exito', '¡Listo! Tu turno quedó reservado. Te esperamos.'],
+    'cancelado'    => ['exito', 'Cancelaste el turno.'],
+    'no_cancelado' => ['error', 'Ese turno ya no se puede cancelar.'],
+  ];
+  $mensaje = $mensajes[filter_input(INPUT_GET, 'msg', FILTER_UNSAFE_RAW) ?? ''] ?? null;
 
   include('includes/header.php');
 ?>
@@ -98,6 +107,12 @@
       </div>
     <?php endif; ?>
 
+    <?php if ($mensaje): ?>
+      <div class="alerta alerta-<?php echo $mensaje[0]; ?>">
+        <?php echo e($mensaje[1]); ?>
+      </div>
+    <?php endif; ?>
+
     <section class="admin-recent">
 
       <h2>Mis datos</h2>
@@ -119,6 +134,8 @@
 
       <h2>Mis turnos</h2>
 
+      <p class="margin-top"><a href="reservas.php" class="btn-blue">Reservar turno</a></p>
+
       <?php if (!$turnos): ?>
         <p>Todavía no tenés turnos reservados.</p>
       <?php else: ?>
@@ -132,6 +149,7 @@
                 <th>Servicios</th>
                 <th>Total</th>
                 <th>Estado</th>
+                <th></th>
               </tr>
             </thead>
             <tbody>
@@ -141,8 +159,22 @@
                   <td><?php echo e(substr($turno['hora'], 0, 5)); ?></td>
                   <td><?php echo e($turno['barbero']); ?></td>
                   <td><?php echo e($turno['servicios']); ?></td>
-                  <td><?php echo e(precio_formateado($turno['total'])); ?></td>
-                  <td><?php echo e($turno['estado']); ?></td>
+                  <td>
+                    <?php echo e(precio_formateado($turno['total'])); ?><br>
+                    <?php if ($turno['sena_monto'] !== null): ?>
+                      <small>Seña <?php echo e(precio_formateado($turno['sena_monto'])); ?></small>
+                    <?php endif; ?>
+                  </td>
+                  <td><span class="<?php echo e(clase_estado($turno['estado'])); ?>"><?php echo e(ESTADOS_TURNO[$turno['estado']] ?? $turno['estado']); ?></span></td>
+                  <td>
+                    <?php if ($turno['cancelable']): ?>
+                      <form method="post" action="cancelar_turno.php" onsubmit="return confirm('¿Cancelar este turno?');">
+                        <?php echo csrf_campo(); ?>
+                        <input type="hidden" name="turno_id" value="<?php echo e($turno['id']); ?>">
+                        <button type="submit" class="btn-mini peligro">Cancelar</button>
+                      </form>
+                    <?php endif; ?>
+                  </td>
                 </tr>
               <?php endforeach; ?>
             </tbody>

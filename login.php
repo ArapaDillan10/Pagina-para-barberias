@@ -9,6 +9,9 @@
 
   header('Cache-Control: no-store, no-cache, must-revalidate');
 
+  // login.php?admin=1: misma validación, pero se muestra como acceso al panel
+  $es_admin = (filter_input(INPUT_GET, 'admin', FILTER_UNSAFE_RAW) ?? '') === '1';
+
   if (isset($_SESSION['usuario_id'])) {
     header('Location: ' . pagina_inicio_segun_rol());
     exit;
@@ -128,12 +131,16 @@
     <section class="login-card">
 
       <span class="section-tag">
-        MI CUENTA
+        <?php echo $es_admin ? 'PANEL ADMIN' : 'MI CUENTA'; ?>
       </span>
 
       <h1>
-        Iniciar sesión
+        <?php echo $es_admin ? 'Acceso al panel' : 'Iniciar sesión'; ?>
       </h1>
+
+      <?php if ($es_admin): ?>
+        <p class="form-ayuda">Acceso solo para administradores.</p>
+      <?php endif; ?>
 
       <?php if ($aviso): ?>
         <div class="alerta alerta-exito">
@@ -147,7 +154,7 @@
         </div>
       <?php endif; ?>
 
-      <form method="post" action="login.php" class="form-servicio" novalidate>
+      <form method="post" action="login.php<?php echo $es_admin ? '?admin=1' : ''; ?>" class="form-servicio" novalidate>
 
         <?php echo csrf_campo(); ?>
 
@@ -181,9 +188,11 @@
 
       </form>
 
-      <p class="form-ayuda">
-        ¿No tenés cuenta? <a href="registro.php">Registrate</a>
-      </p>
+      <?php if (!$es_admin): ?>
+        <p class="form-ayuda">
+          ¿No tenés cuenta? <a href="registro.php">Registrate</a>
+        </p>
+      <?php endif; ?>
 
     </section>
 
