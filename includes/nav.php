@@ -43,10 +43,12 @@
       </nav>
 
 
-      <!-- BOTÓN RESERVAR -->
-      <a href="reservas.php" class="btn-blue nav-btn">
-        Reservar Turno
-      </a>
+      <!-- BOTÓN MI CUENTA: sin sesión va al login, con sesión saluda por nombre -->
+      <?php if (isset($_SESSION['usuario_id'])): ?>
+        <a href="mi_cuenta.php" class="btn-blue nav-btn">Hola, <?php echo e(explode(' ', $_SESSION['usuario_nombre'])[0]); ?></a>
+      <?php else: ?>
+        <a href="login.php" class="btn-blue nav-btn">Mi cuenta</a>
+      <?php endif; ?>
 
     </div>
 

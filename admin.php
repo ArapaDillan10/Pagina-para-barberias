@@ -3,10 +3,31 @@
   require_once __DIR__ . '/includes/auth_guard.php';
   verificarRol('admin');
   require_once __DIR__ . '/config/conexion.php';
+  require_once __DIR__ . '/includes/funciones.php';
+  require_once __DIR__ . '/includes/turnos.php';
 
   $stmt = $pdo->prepare('SELECT COUNT(*) AS total FROM servicios WHERE estado = :estado');
   $stmt->execute([':estado' => 1]);
   $total_servicios = (int) $stmt->fetch()['total'];
+
+  $reservas_hoy = (int) $pdo->query("SELECT COUNT(*) FROM turnos WHERE fecha = CURDATE() AND estado <> 'cancelado'")->fetchColumn();
+  $total_clientes = (int) $pdo->query("SELECT COUNT(*) FROM usuarios WHERE rol = 'usuario'")->fetchColumn();
+  $turnos_pendientes = (int) $pdo->query("SELECT COUNT(*) FROM turnos WHERE estado = 'pendiente' AND fecha >= CURDATE()")->fetchColumn();
+  $total_barberos = (int) $pdo->query('SELECT COUNT(*) FROM barberos WHERE estado = 1')->fetchColumn();
+
+  $proximos_turnos = $pdo->query(
+    "SELECT t.fecha, t.hora, t.estado, u.nombre AS cliente, b.nombre AS barbero,
+            GROUP_CONCAT(s.nombre ORDER BY s.nombre SEPARATOR ' + ') AS servicios
+     FROM turnos t
+     INNER JOIN usuarios u        ON u.id = t.usuario_id
+     INNER JOIN barberos b        ON b.id = t.barbero_id
+     INNER JOIN turno_servicio ts ON ts.turno_id = t.id
+     INNER JOIN servicios s       ON s.id = ts.servicio_id
+     WHERE t.fecha >= CURDATE() AND t.estado <> 'cancelado'
+     GROUP BY t.id, t.fecha, t.hora, t.estado, u.nombre, b.nombre
+     ORDER BY t.fecha, t.hora
+     LIMIT 5"
+  )->fetchAll();
 
   include('includes/header.php');
   include('includes/admin_nav.php');
@@ -74,7 +95,7 @@
           </span>
 
           <strong>
-            8
+            <?php echo $reservas_hoy; ?>
           </strong>
 
           <small>
@@ -102,7 +123,7 @@
           </span>
 
           <strong>
-            124
+            <?php echo $total_clientes; ?>
           </strong>
 
           <small>
@@ -213,16 +234,14 @@
             </p>
 
             <span class="admin-card-info">
-              8 turnos pendientes
+              <?php echo $turnos_pendientes; ?> turnos pendientes
             </span>
 
           </div>
 
-          <button
-            type="button"
-            class="btn-blue admin-action">
+          <a href="admin_turnos.php" class="btn-blue admin-action">
             Ver reservas
-          </button>
+          </a>
 
         </div>
 
@@ -249,16 +268,14 @@
             </p>
 
             <span class="admin-card-info">
-              4 barberos
+              <?php echo $total_barberos; ?> barberos
             </span>
 
           </div>
 
-          <button
-            type="button"
-            class="btn-blue admin-action">
-            Ver barberos
-          </button>
+          <a href="admin_barberos.php" class="btn-blue admin-action">
+            Gestionar barberos
+          </a>
 
         </div>
 
@@ -422,7 +439,7 @@
       </span>
 
       <h2>
-        Últimas reservas
+        Próximos turnos
       </h2>
 
 
@@ -464,108 +481,19 @@
 
 
           <tbody>
-
-
-            <!-- RESERVA 1 -->
-
-            <tr>
-
-              <td>
-                Juan García
-              </td>
-
-              <td>
-                Corte + Barba
-              </td>
-
-              <td>
-                Mateo
-              </td>
-
-              <td>
-                23/09/2026
-              </td>
-
-              <td>
-                09:00
-              </td>
-
-              <td>
-                <span class="booking-status confirmed">
-                  Confirmado
-                </span>
-              </td>
-
-            </tr>
-
-
-            <!-- RESERVA 2 -->
-
-            <tr>
-
-              <td>
-                Gonzalo M.
-              </td>
-
-              <td>
-                Corte Clásico
-              </td>
-
-              <td>
-                Dillan
-              </td>
-
-              <td>
-                23/09/2026
-              </td>
-
-              <td>
-                10:00
-              </td>
-
-              <td>
-                <span class="booking-status pending">
-                  Pendiente
-                </span>
-              </td>
-
-            </tr>
-
-
-            <!-- RESERVA 3 -->
-
-            <tr>
-
-              <td>
-                Marcos R.
-              </td>
-
-              <td>
-                Barba Completa
-              </td>
-
-              <td>
-                Ezequiel
-              </td>
-
-              <td>
-                23/09/2026
-              </td>
-
-              <td>
-                11:00
-              </td>
-
-              <td>
-                <span class="booking-status confirmed">
-                  Confirmado
-                </span>
-
-              </td>
-
-            </tr>
-
-
+            <?php if (!$proximos_turnos): ?>
+              <tr><td colspan="6">No hay turnos próximos.</td></tr>
+            <?php endif; ?>
+            <?php foreach ($proximos_turnos as $turno): ?>
+              <tr>
+                <td><?php echo e($turno['cliente']); ?></td>
+                <td><?php echo e($turno['servicios']); ?></td>
+                <td><?php echo e($turno['barbero']); ?></td>
+                <td><?php echo e(date('d/m/Y', strtotime($turno['fecha']))); ?></td>
+                <td><?php echo e(substr($turno['hora'], 0, 5)); ?></td>
+                <td><span class="<?php echo e(clase_estado($turno['estado'])); ?>"><?php echo e(ESTADOS_TURNO[$turno['estado']]); ?></span></td>
+              </tr>
+            <?php endforeach; ?>
           </tbody>
 
         </table>

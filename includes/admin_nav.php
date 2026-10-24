@@ -35,6 +35,14 @@
           Dashboard
         </a>
 
+        <a href="admin_turnos.php" class="btn-ghost-sm">
+          Turnos
+        </a>
+
+        <a href="admin_barberos.php" class="btn-ghost-sm">
+          Barberos
+        </a>
+
         <a href="admin_servicios.php" class="btn-ghost-sm">
           Servicios
         </a>

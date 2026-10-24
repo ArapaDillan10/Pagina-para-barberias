@@ -1,0 +1,10 @@
+# Carpeta de imágenes subidas desde el panel: nunca ejecutar código acá
+<FilesMatch "\.(php\d?|phtml|phar|pl|py|cgi|sh|html?|js)$">
+  Require all denied
+</FilesMatch>
+
+<IfModule mod_php.c>
+  php_flag engine off
+</IfModule>
+
+Options -Indexes -ExecCGI
