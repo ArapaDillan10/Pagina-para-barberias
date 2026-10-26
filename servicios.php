@@ -55,7 +55,7 @@
 
       <!-- BUSCADOR (GET) -->
 
-      <form method="get" action="servicios.php" class="search-form">
+      <form method="get" action="servicios.php" class="search-form" id="form-buscar-servicios">
 
         <label for="buscar" class="visually-hidden">
           Buscar servicio
@@ -95,7 +95,9 @@
       <?php endif; ?>
 
 
-      <div class="grid-services">
+      <div id="aviso-busqueda"></div>
+
+      <div class="grid-services" id="grid-servicios">
 
         <?php foreach ($resultados as $servicio): ?>
 
