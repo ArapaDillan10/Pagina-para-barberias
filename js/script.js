@@ -98,9 +98,14 @@ document.addEventListener('DOMContentLoaded', () => {
       const params = new URLSearchParams({ barbero: barbero.value, fecha: inputFecha.value });
 
       try {
-        const respuesta = await fetch(`horarios.php?${params}`);
-        const datos = await respuesta.json();
-        const ocupados = datos.ocupados || [];
+        const respuesta = await fetch(`api/horarios.php?${params}`);
+        const json = await respuesta.json();
+
+        if (!respuesta.ok || json.status !== 'success') {
+          throw new Error(json.message || `HTTP ${respuesta.status}`);
+        }
+
+        const ocupados = json.data.ocupados || [];
 
         radiosHora.forEach(radio => {
           const ocupado = ocupados.includes(radio.value);
@@ -109,7 +114,7 @@ document.addEventListener('DOMContentLoaded', () => {
           if (ocupado) radio.checked = false;
         });
 
-        estadoHorarios.textContent = datos.cerrado ? 'ESE DÍA NO ATENDEMOS' : 'HORARIOS DISPONIBLES';
+        estadoHorarios.textContent = json.data.cerrado ? 'ESE DÍA NO ATENDEMOS' : 'HORARIOS DISPONIBLES';
       } catch (error) {
         estadoHorarios.textContent = 'NO SE PUDIERON CARGAR LOS HORARIOS';
       }
@@ -213,3 +218,66 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
 });
+/* ─── Buscador en vivo de servicios (TP9 - Fetch API + JSON) ─── */
+const formBuscar    = document.getElementById('form-buscar-servicios');
+const inputBuscar   = document.getElementById('buscar');
+const gridServicios = document.getElementById('grid-servicios');
+const avisoBusqueda = document.getElementById('aviso-busqueda');
+
+if (inputBuscar && gridServicios) {
+  const aDinero   = (n) => '$' + Number(n).toLocaleString('es-AR', { maximumFractionDigits: 0 });
+  const escapeHtml = (s) => String(s).replace(/[&<>"']/g,
+    (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[c]));
+
+  const renderServicios = (servicios) => {
+    gridServicios.innerHTML = '';
+
+    if (!servicios.length) {
+      avisoBusqueda.innerHTML =
+        '<div class="alerta alerta-error">No se encontraron servicios. <a href="servicios.php">Ver todos</a></div>';
+      return;
+    }
+
+    avisoBusqueda.innerHTML = '';
+    servicios.forEach((s) => {
+      const card = document.createElement('div');
+      card.className = 'card-service';
+      card.innerHTML =
+        (s.imagen
+          ? `<img src="img/${escapeHtml(s.imagen)}" alt="${escapeHtml(s.nombre)}" class="service-img" loading="lazy">`
+          : '') +
+        `<h3>${escapeHtml(s.nombre)}</h3>` +
+        `<p>${escapeHtml(s.descripcion)}</p>` +
+        `<span class="price">${aDinero(s.precio)}</span>`;
+      gridServicios.appendChild(card);
+    });
+  };
+
+  const buscarServicios = async () => {
+    try {
+      const res = await fetch(`api/servicios.php?q=${encodeURIComponent(inputBuscar.value.trim())}`);
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}`);
+      }
+      const json = await res.json();
+      if (json.status !== 'success') {
+        throw new Error(json.message || 'Error del servidor');
+      }
+      renderServicios(json.data);
+    } catch (error) {
+      avisoBusqueda.innerHTML =
+        '<div class="alerta alerta-error">No se pudieron cargar los servicios.</div>';
+    }
+  };
+
+  let timerBusqueda;
+  inputBuscar.addEventListener('input', () => {
+    clearTimeout(timerBusqueda);
+    timerBusqueda = setTimeout(buscarServicios, 250); // debounce: no dispara una request por tecla
+  });
+
+  formBuscar?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    buscarServicios();
+  });
+}

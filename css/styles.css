@@ -1389,7 +1389,7 @@ a.btn-danger {
 
 .avatar-placeholder {
   width: calc(100% + 3rem);
-  height: 380px;
+  height: 420px;
   margin: -1.5rem -1.5rem 1.25rem -1.5rem;
   border-radius: 6px 6px 0 0;
   display: flex;
