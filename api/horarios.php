@@ -1,5 +1,6 @@
 <?php
   // API (TP9): devuelve en JSON los horarios no disponibles para un barbero y una fecha.
+  // Los datos salen de los modelos del módulo de reservas (TP10 - MVC).
   header('Content-Type: application/json; charset=utf-8');
   header('Cache-Control: no-store');
 
@@ -20,12 +21,14 @@
   }
 
   require_once __DIR__ . '/../config/conexion.php';
+  require_once __DIR__ . '/../app/Models/BarberoModel.php';
+  require_once __DIR__ . '/../app/Models/TurnoModel.php';
 
   try {
-    $stmt = $pdo->prepare('SELECT id FROM barberos WHERE id = :id AND estado = 1');
-    $stmt->execute([':id' => $barbero_id]);
+    $barberos = new BarberoModel($pdo);
+    $turnos   = new TurnoModel($pdo);
 
-    if (!$stmt->fetch()) {
+    if (!$barberos->existeActivo($barbero_id)) {
       http_response_code(404);
       exit(json_encode(['status' => 'error', 'message' => 'Barbero no encontrado.']));
     }
@@ -39,7 +42,7 @@
       ]));
     }
 
-    $ocupados = horas_ocupadas($pdo, $barbero_id, $fecha);
+    $ocupados = $turnos->horasOcupadas($barbero_id, $fecha);
 
     foreach (HORARIOS_TURNOS as $hora) {
       if (hora_ya_paso($fecha, $hora)) {
