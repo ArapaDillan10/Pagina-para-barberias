@@ -9,3 +9,5 @@ img/barberos/*
 
 # Comprobantes de seña (archivos privados del cliente)
 var/comprobantes/
+
+framework/.env
