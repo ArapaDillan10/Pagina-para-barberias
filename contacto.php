@@ -1,44 +1,72 @@
 <?php
   $titulo_pagina = 'DKBZA Barber Studio | Contacto';
+  require_once __DIR__ . '/includes/sesion.php';
+  require_once __DIR__ . '/config/conexion.php';
+  require_once __DIR__ . '/includes/funciones.php';
 
-  function limpiar($dato) {
-    return htmlspecialchars(trim($dato), ENT_QUOTES, 'UTF-8');
-  }
+  const MENSAJES_POR_HORA = 3;
 
   $nombre = '';
   $email = '';
   $mensaje = '';
   $errores = [];
-  $exito = false;
+  $exito = ($_GET['enviado'] ?? '') === '1';
 
   if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    csrf_verificar();
 
-    $nombre  = isset($_POST['nombre'])  ? limpiar($_POST['nombre'])  : '';
-    $email   = isset($_POST['email'])   ? limpiar($_POST['email'])   : '';
-    $mensaje = isset($_POST['mensaje']) ? limpiar($_POST['mensaje']) : '';
-
-    if (empty($nombre)) {
-      $errores[] = 'El nombre es obligatorio.';
+    // Campo trampa: las personas no lo ven, los bots de spam sí lo completan
+    if (!empty($_POST['sitio_web'])) {
+      header('Location: contacto.php?enviado=1');
+      exit;
     }
 
-    if (empty($email)) {
+    $nombre  = trim((string) ($_POST['nombre'] ?? ''));
+    $email   = trim((string) ($_POST['email'] ?? ''));
+    $mensaje = trim((string) ($_POST['mensaje'] ?? ''));
+    $ip      = $_SERVER['REMOTE_ADDR'] ?? 'desconocida';
+
+    if ($nombre === '') {
+      $errores[] = 'El nombre es obligatorio.';
+    } elseif (strlen($nombre) > 100) {
+      $errores[] = 'El nombre es demasiado largo.';
+    }
+
+    if ($email === '') {
       $errores[] = 'El email es obligatorio.';
-    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL) || strlen($email) > 150) {
       $errores[] = 'El email no tiene un formato válido (ej: nombre@correo.com).';
     }
 
-    if (empty($mensaje)) {
+    if ($mensaje === '') {
       $errores[] = 'El mensaje es obligatorio.';
     } elseif (strlen($mensaje) < 10) {
       $errores[] = 'El mensaje debe tener al menos 10 caracteres.';
+    } elseif (strlen($mensaje) > 2000) {
+      $errores[] = 'El mensaje no puede superar los 2000 caracteres.';
     }
 
     if (empty($errores)) {
-      $exito = true;
-      $nombre_enviado = $nombre;
-      $nombre = '';
-      $email = '';
-      $mensaje = '';
+      $stmt = $pdo->prepare('SELECT COUNT(*) FROM mensajes WHERE ip = :ip AND created_at > (NOW() - INTERVAL 1 HOUR)');
+      $stmt->execute([':ip' => $ip]);
+
+      if ((int) $stmt->fetchColumn() >= MENSAJES_POR_HORA) {
+        $errores[] = 'Ya enviaste varios mensajes en la última hora. Probá de nuevo más tarde.';
+      }
+    }
+
+    if (empty($errores)) {
+      $stmt = $pdo->prepare('INSERT INTO mensajes (nombre, email, mensaje, ip) VALUES (:nombre, :email, :mensaje, :ip)');
+      $stmt->execute([
+        ':nombre'  => $nombre,
+        ':email'   => $email,
+        ':mensaje' => $mensaje,
+        ':ip'      => $ip,
+      ]);
+
+      // Redirige para que al recargar la página no se mande el mensaje otra vez
+      header('Location: contacto.php?enviado=1');
+      exit;
     }
   }
 
@@ -91,7 +119,7 @@
 
         <?php if ($exito): ?>
           <div class="alerta alerta-exito">
-            ¡Gracias, <?php echo $nombre_enviado; ?>! Recibimos tu mensaje y te vamos a responder a la brevedad.
+            ¡Gracias! Recibimos tu mensaje y te vamos a responder a la brevedad.
           </div>
         <?php endif; ?>
 
@@ -100,11 +128,19 @@
             <strong>Revisá los siguientes errores:</strong>
             <ul>
               <?php foreach ($errores as $error): ?>
-                <li><?php echo $error; ?></li>
+                <li><?php echo e($error); ?></li>
               <?php endforeach; ?>
             </ul>
           </div>
         <?php endif; ?>
+
+        <?php echo csrf_campo(); ?>
+
+        <!-- Campo trampa para bots: queda fuera de la pantalla -->
+        <div style="position: absolute; left: -9999px;" aria-hidden="true">
+          <label for="sitio_web">No completar</label>
+          <input type="text" id="sitio_web" name="sitio_web" tabindex="-1" autocomplete="off">
+        </div>
 
         <label for="nombre">
           Nombre
@@ -115,7 +151,8 @@
           id="nombre"
           name="nombre"
           class="wireframe-input"
-          value="<?php echo $nombre; ?>"
+          value="<?php echo e($nombre); ?>"
+          maxlength="100"
           required
         >
 
@@ -129,7 +166,8 @@
           id="email"
           name="email"
           class="wireframe-input"
-          value="<?php echo $email; ?>"
+          value="<?php echo e($email); ?>"
+          maxlength="150"
           required
         >
 
@@ -143,8 +181,9 @@
           name="mensaje"
           class="wireframe-input"
           rows="4"
+          maxlength="2000"
           required
-        ><?php echo $mensaje; ?></textarea>
+        ><?php echo e($mensaje); ?></textarea>
 
 
         <button
