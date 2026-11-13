@@ -25,7 +25,7 @@
 
         <div class="gallery-card">
 
-          <img src="./img/corteI.png" alt="Corte 1" loading="lazy">
+          <img src="./img/corteI.webp""" alt="Corte 1" loading="lazy">
 
           <span class="gallery-caption">
             Color, mas corte incluido y perfilado de cejas.
@@ -35,7 +35,7 @@
 
         <div class="gallery-card">
 
-          <img src="./img/corteII.png" alt="Corte 2" loading="lazy">
+          <img src="./img/corteII.webp""" alt="Corte 2" loading="lazy">
 
           <span class="gallery-caption">
             Corte.
@@ -45,7 +45,7 @@
 
         <div class="gallery-card">
 
-          <img src="./img/corteIII.png" alt="Corte 3" loading="lazy">
+          <img src="./img/corteIII.webp""" alt="Corte 3" loading="lazy">
 
           <span class="gallery-caption">
             Taper fade.
@@ -55,7 +55,7 @@
 
         <div class="gallery-card">
 
-          <img src="./img/corteIV.png" alt="Corte 4" loading="lazy">
+          <img src="./img/corteIV.webp"" alt="Corte 4" loading="lazy">
 
           <span class="gallery-caption">
             Rulos, mas corte incluido.

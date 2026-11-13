@@ -46,7 +46,7 @@
 
         <div class="card-product">
 
-          <img src="./img/producto1.png" alt="Pomada Mate Level3" class="product-img" loading="lazy">
+          <img src="./img/producto1.webp" alt="Pomada Mate Level3" class="product-img" loading="lazy">
 
           <h3>
             Pomada Mate Level3
@@ -74,7 +74,7 @@
 
         <div class="card-product">
 
-          <img src="./img/producto2.png" alt="Aftershave Cologne Level3" class="product-img" loading="lazy">
+          <img src="./img/producto2.webp" alt="Aftershave Cologne Level3" class="product-img" loading="lazy">
 
           <h3>
             Aftershave Cologne Level3

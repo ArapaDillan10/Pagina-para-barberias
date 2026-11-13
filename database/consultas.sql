@@ -22,9 +22,9 @@ INSERT INTO barberos (nombre, especialidad) VALUES
 
 -- servicios (los mismos que ya mostraba el sitio, ahora con su categoría)
 INSERT INTO servicios (categoria_id, nombre, descripcion, precio, imagen) VALUES
-(1, 'Corte', 'Asesoramiento en referencia al tipo de rostro y eleccion del corte ideal.', 18000, 'corte1.png'),
-(2, 'Barba Completa', 'Toalla caliente, perfilado con navaja y aceites esenciales.', 9000, 'corte2.png'),
-(3, 'Combo DKBZA (Corte + Barba)', 'Servicio completo VIP con asesoramiento y bebida incluida a eleccion.', 25000, 'combo3.png');
+(1, 'Corte', 'Asesoramiento en referencia al tipo de rostro y eleccion del corte ideal.', 18000, 'corte1.webp'),
+(2, 'Barba Completa', 'Toalla caliente, perfilado con navaja y aceites esenciales.', 9000, 'corte2.webp'),
+(3, 'Combo DKBZA (Corte + Barba)', 'Servicio completo VIP con asesoramiento y bebida incluida a eleccion.', 25000, 'combo3.webp');
 
 -- Clientes de ejemplo. El hash corresponde a una clave aleatoria
 -- que no se guardó: sirven como datos de prueba, no para iniciar sesión.
