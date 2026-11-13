@@ -1506,3 +1506,29 @@ input[type="file"].wireframe-input { padding: 0.6rem; }
     font-size: 0.85rem;
   }
 }
+
+/* Página 404 */
+.pagina-error {
+  min-height: 70vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 1.5rem;
+}
+
+.pagina-error-titulo {
+  font-size: clamp(2rem, 6vw, 3.5rem);
+  line-height: 1.1;
+}
+
+.pagina-error-texto {
+  color: #9CA3AF;
+  max-width: 480px;
+}
+
+.pagina-error-botones {
+  justify-content: center;
+  flex-wrap: wrap;
+}

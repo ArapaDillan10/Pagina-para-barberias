@@ -12,7 +12,13 @@
   <title><?php echo htmlspecialchars($titulo_pagina); ?></title>
 
   <!-- CSS PRINCIPAL -->
-   <link rel="stylesheet" href="./css/styles.css?v=2" />
+  <!-- BASE: solo la usa 404.php para que los links funcionen desde cualquier carpeta -->
+  <?php if (!empty($base_href)): ?>
+    <base href="<?php echo htmlspecialchars($base_href); ?>" />
+  <?php endif; ?>
+
+  <!-- CSS PRINCIPAL -->
+  <link rel="stylesheet" href="./css/styles.css?v=3" />
 
   <!-- FUENTES -->
   <link rel="preconnect" href="https://fonts.googleapis.com">

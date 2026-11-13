@@ -15,6 +15,17 @@
 </IfModule>
 
 # =========================================================
+# PÁGINA 404 PROPIA
+# (en XAMPP el sitio está en /Barberias, en el hosting en la raíz)
+# =========================================================
+<If "%{HTTP_HOST} =~ /^(localhost|127\.0\.0\.1)/">
+  ErrorDocument 404 /Barberias/404.php
+</If>
+<Else>
+  ErrorDocument 404 /404.php
+</Else>
+
+# =========================================================
 # SEGURIDAD (TP7 - login)
 # =========================================================
 
