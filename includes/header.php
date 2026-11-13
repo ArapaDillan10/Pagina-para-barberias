@@ -12,7 +12,7 @@
   <title><?php echo htmlspecialchars($titulo_pagina); ?></title>
 
   <!-- CSS PRINCIPAL -->
-  <link rel="stylesheet" href="./css/styles.css" />
+   <link rel="stylesheet" href="./css/styles.css?v=2" />
 
   <!-- FUENTES -->
   <link rel="preconnect" href="https://fonts.googleapis.com">

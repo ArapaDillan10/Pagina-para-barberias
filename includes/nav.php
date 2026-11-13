@@ -41,7 +41,8 @@
         <a href="contacto.php" class="<?php echo $pagina_actual == 'contacto.php' ? 'active' : ''; ?>">Contacto</a>
 
       </nav>
-
+      
+      <button class="nav-toggle" id="navToggle" aria-label="Abrir menú" aria-expanded="false">☰</button>
 
       <!-- BOTÓN MI CUENTA: sin sesión va al login, con sesión saluda por nombre -->
       <?php if (isset($_SESSION['usuario_id'])): ?>
@@ -53,3 +54,10 @@
     </div>
 
   </header>
+
+  <script>
+    document.getElementById('navToggle').addEventListener('click', function () {
+      var abierto = document.querySelector('.nav-links').classList.toggle('abierto');
+      this.setAttribute('aria-expanded', abierto);
+    });
+  </script>
