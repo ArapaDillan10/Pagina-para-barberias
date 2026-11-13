@@ -14,6 +14,7 @@
   $total_clientes = (int) $pdo->query("SELECT COUNT(*) FROM usuarios WHERE rol = 'usuario'")->fetchColumn();
   $turnos_pendientes = (int) $pdo->query("SELECT COUNT(*) FROM turnos WHERE estado = 'pendiente' AND fecha >= CURDATE()")->fetchColumn();
   $total_barberos = (int) $pdo->query('SELECT COUNT(*) FROM barberos WHERE estado = 1')->fetchColumn();
+  $mensajes_sin_leer = (int) $pdo->query('SELECT COUNT(*) FROM mensajes WHERE leido = 0')->fetchColumn();
 
   $proximos_turnos = $pdo->query(
     "SELECT t.fecha, t.hora, t.estado, u.nombre AS cliente, b.nombre AS barbero,
@@ -408,23 +409,16 @@
             </p>
 
             <span class="admin-card-info">
-              3 mensajes nuevos
+              <?php echo $mensajes_sin_leer; ?> sin leer
             </span>
 
           </div>
 
-          <button
-            type="button"
-            class="btn-blue admin-action">
+          <a href="admin_mensajes.php" class="btn-blue admin-action">
             Ver mensajes
-          </button>
+          </a>
 
         </div>
-
-
-      </div>
-
-    </section>
 
 
 

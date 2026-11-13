@@ -39,6 +39,10 @@
           Turnos
         </a>
 
+        <a href="admin_mensajes.php" class="btn-ghost-sm">
+          Mensajes
+        </a>
+
         <a href="admin_barberos.php" class="btn-ghost-sm">
           Barberos
         </a>
