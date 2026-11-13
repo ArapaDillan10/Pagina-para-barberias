@@ -10,7 +10,7 @@
 
       <a href="admin.php" class="brand">
 
-        <span class="brand-icon">💈</span>
+        <img src="./img/logo.png" alt="Logo DKBZA" class="brand-logo" />
 
         <div>
 

@@ -95,6 +95,14 @@ h1, h2, h3, h4, .mono {
   font-size: 0.9rem;
 }
 
+.brand-logo {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+}
+
 .brand-name {
   font-family: 'JetBrains Mono', monospace;
   font-weight: 700;
