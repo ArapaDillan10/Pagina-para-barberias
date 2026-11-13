@@ -3,6 +3,29 @@
 </Files>
 
 # =========================================================
+# HTTPS: si alguien entra por http:// lo manda a https://
+# (en localhost no, porque XAMPP no tiene certificado)
+# =========================================================
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteCond %{HTTP_HOST} !^(localhost|127\.0\.0\.1) [NC]
+  RewriteCond %{HTTPS} off
+  RewriteCond %{HTTP:X-Forwarded-Proto} !https
+  RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+</IfModule>
+
+# =========================================================
+# PÁGINA 404 PROPIA
+# (en XAMPP el sitio está en /Barberias, en el hosting en la raíz)
+# =========================================================
+<If "%{HTTP_HOST} =~ /^(localhost|127\.0\.0\.1)/">
+  ErrorDocument 404 /Barberias/404.php
+</If>
+<Else>
+  ErrorDocument 404 /404.php
+</Else>
+
+# =========================================================
 # SEGURIDAD (TP7 - login)
 # =========================================================
 
