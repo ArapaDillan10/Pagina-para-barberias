@@ -88,7 +88,14 @@
       mkdir($destino, 0755, true);
     }
 
-    $nombre_archivo = bin2hex(random_bytes(8)) . '.' . $tipos_permitidos[$info[2]];
+    $nombre_base = bin2hex(random_bytes(8));
+
+    // Si el servidor puede, se guarda como WebP (pesa mucho menos)
+    if (is_uploaded_file($archivo['tmp_name']) && convertir_a_webp($archivo['tmp_name'], $info[2], $destino . $nombre_base . '.webp')) {
+      return ['ruta' => $carpeta . '/' . $nombre_base . '.webp'];
+    }
+
+    $nombre_archivo = $nombre_base . '.' . $tipos_permitidos[$info[2]];
 
     if (!move_uploaded_file($archivo['tmp_name'], $destino . $nombre_archivo)) {
       return ['error' => 'No se pudo guardar la imagen en el servidor.'];
@@ -96,6 +103,44 @@
 
     return ['ruta' => $carpeta . '/' . $nombre_archivo];
   }
+
+  // Convierte una imagen a WebP, la achica si es muy ancha y la endereza si es una foto del celular.
+  // Devuelve false si el servidor no tiene GD con WebP o si la conversión falla.
+  function convertir_a_webp($origen, $tipo, $destino, $ancho_maximo = 1200) {
+    if (!function_exists('imagewebp')) {
+      return false;
+    }
+
+    $imagen = @imagecreatefromstring(file_get_contents($origen));
+
+    if ($imagen === false) {
+      return false;
+    }
+
+    // Las fotos del celular vienen "acostadas" y traen en el EXIF cómo girarlas
+    if ($tipo === IMAGETYPE_JPEG && function_exists('exif_read_data')) {
+      $exif = @exif_read_data($origen);
+      $giro = [3 => 180, 6 => -90, 8 => 90][$exif['Orientation'] ?? 1] ?? 0;
+
+      if ($giro !== 0) {
+        $imagen = imagerotate($imagen, $giro, 0);
+      }
+    }
+
+    if (imagesx($imagen) > $ancho_maximo) {
+      $imagen = imagescale($imagen, $ancho_maximo);
+    }
+
+    imagepalettetotruecolor($imagen);
+    imagealphablending($imagen, false);
+    imagesavealpha($imagen, true);
+
+    $ok = imagewebp($imagen, $destino, 80);
+    imagedestroy($imagen);
+
+    return $ok;
+  }
+
 
   // Guarda el comprobante de seña en var/comprobantes/ (fuera del alcance público).
   // Solo acepta PDF o imagen real (JPG, PNG, WEBP) leyendo la firma del archivo:

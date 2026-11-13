@@ -15,6 +15,13 @@
 </IfModule>
 
 # =========================================================
+# IMÁGENES SUBIDAS: en img/ nunca se ejecutan scripts
+# =========================================================
+<IfModule mod_rewrite.c>
+  RewriteRule ^img/.*\.(php[0-9]?|phtml|phar|pl|py|cgi|sh|html?|js)$ - [F,NC]
+</IfModule>
+
+# =========================================================
 # PÁGINA 404 PROPIA
 # (en XAMPP el sitio está en /Barberias, en el hosting en la raíz)
 # =========================================================
@@ -24,6 +31,20 @@
 <Else>
   ErrorDocument 404 /404.php
 </Else>
+
+# =========================================================
+# IMÁGENES: tipo WebP y caché de 1 semana en el navegador
+# =========================================================
+<IfModule mod_mime.c>
+  AddType image/webp .webp
+</IfModule>
+
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType image/webp "access plus 1 week"
+  ExpiresByType image/png "access plus 1 week"
+  ExpiresByType image/jpeg "access plus 1 week"
+</IfModule>
 
 # =========================================================
 # SEGURIDAD (TP7 - login)
