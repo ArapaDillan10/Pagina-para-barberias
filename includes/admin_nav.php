@@ -1,3 +1,7 @@
+<?php
+  // Aviso de reseñas que el admin todavía no vio (se apaga al entrar a admin_resenas.php)
+  $nav_resenas_nuevas = (int) $pdo->query('SELECT COUNT(*) FROM resenas WHERE vista = 0')->fetchColumn();
+?>
   <!-- =========================================================
        NAVBAR DEL ADMIN
        ========================================================= -->
@@ -45,6 +49,10 @@
             Mensajes
           </a>
 
+          <a href="admin_resenas.php" class="btn-ghost-sm">
+            Reseñas<?php if ($nav_resenas_nuevas > 0): ?> <span class="nav-badge"><?php echo $nav_resenas_nuevas; ?></span><?php endif; ?>
+          </a>
+
           <a href="admin_barberos.php" class="btn-ghost-sm">
             Barberos
           </a>
@@ -66,7 +74,7 @@
           </button>
         </form>
 
-        <button type="button" class="nav-toggle" id="adminNavToggle" aria-label="Abrir menú" aria-expanded="false">☰</button>
+        <button type="button" class="nav-toggle" id="adminNavToggle" aria-label="Abrir menú" aria-expanded="false">☰<?php if ($nav_resenas_nuevas > 0): ?><span class="nav-badge-punto"></span><?php endif; ?></button>
 
       </div>
 

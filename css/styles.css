@@ -1664,3 +1664,220 @@ input[type="file"].wireframe-input { padding: 0.6rem; }
     color: #999;
   }
 }
+/* =========================================================
+   RESEÑAS (resenas.php y admin_resenas.php)
+   ========================================================= */
+
+.resenas-resumen {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.resenas-resumen p {
+  margin: 0.25rem 0 0;
+}
+
+.resenas-promedio {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 3rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.estrellas-fijas {
+  color: #FBBF24;
+  font-size: 1.1rem;
+  letter-spacing: 2px;
+  white-space: nowrap;
+}
+
+.estrellas-fijas .estrella-vacia {
+  color: rgba(255, 255, 255, 0.18);
+}
+
+/* Recuadro para dejar la reseña */
+.resena-box {
+  max-width: 640px;
+  margin-top: 2rem;
+  padding: 1.75rem;
+  background: #060B18;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+}
+
+.resena-box h2 {
+  margin: 0 0 0.25rem;
+  font-size: 1.25rem;
+}
+
+.resena-box p {
+  margin: 0.25rem 0;
+}
+
+.resena-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.resena-form textarea {
+  min-height: 110px;
+  resize: vertical;
+}
+
+.resena-form-pie {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* 5 estrellas para tocar: van de 5 a 1 en el HTML y se dan vuelta con row-reverse,
+   así "la elegida y todas las de su izquierda" se pintan solo con CSS */
+.estrellas-input {
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+.estrellas-input legend {
+  margin-bottom: 0.25rem;
+  font-size: 0.9rem;
+}
+
+.estrellas-opciones {
+  display: inline-flex;
+  flex-direction: row-reverse;
+  gap: 0.25rem;
+}
+
+.estrellas-opciones input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.estrellas-opciones label {
+  font-size: 2.25rem;
+  line-height: 1;
+  color: rgba(255, 255, 255, 0.18);
+  cursor: pointer;
+  transition: color 0.15s ease, transform 0.15s ease;
+}
+
+.estrellas-opciones label:hover,
+.estrellas-opciones label:hover ~ label,
+.estrellas-opciones input:checked ~ label {
+  color: #FBBF24;
+}
+
+.estrellas-opciones label:hover {
+  transform: scale(1.1);
+}
+
+.estrellas-opciones input:focus-visible + label {
+  outline: 2px solid #0055FF;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Tarjetas de la lista */
+.review-card {
+  justify-content: flex-start;
+}
+
+.review-head {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.review-head strong {
+  display: block;
+  font-size: 0.95rem;
+}
+
+.review-head small {
+  color: #9CA3AF;
+  font-size: 0.75rem;
+}
+
+.review-avatar {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #E63946;
+  color: #fff;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.review-card p {
+  margin: 0.75rem 0 0;
+  color: #D1D5DB;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+/* Aviso de "nuevo" en el menú del admin */
+.nav-badge {
+  display: inline-block;
+  min-width: 18px;
+  padding: 0 6px;
+  border-radius: 9px;
+  background: #E63946;
+  color: #fff;
+  font-size: 0.65rem;
+  line-height: 18px;
+  text-align: center;
+  text-decoration: none;
+}
+
+.nav-toggle {
+  position: relative;
+}
+
+.nav-badge-punto {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #E63946;
+}
+
+@media (max-width: 600px) {
+
+  .resena-box {
+    padding: 1.25rem 1rem;
+  }
+
+  .estrellas-opciones label {
+    font-size: 2.6rem;
+  }
+
+  .resena-form-pie {
+    flex-direction: column-reverse;
+    align-items: stretch;
+    text-align: center;
+  }
+
+  .resena-form-pie .btn-blue {
+    width: 100%;
+  }
+
+  .resenas-promedio {
+    font-size: 2.5rem;
+  }
+}
