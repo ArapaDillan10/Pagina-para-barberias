@@ -281,3 +281,17 @@ if (inputBuscar && gridServicios) {
     buscarServicios();
   });
 }
+
+// Tablas del admin en el celular: cada celda guarda el título de su columna
+// para mostrarlo arriba del dato (ver .admin-table td[data-label] en styles.css)
+document.querySelectorAll('.admin-table').forEach((tabla) => {
+  const titulos = [...tabla.querySelectorAll('thead th')].map((th) => th.textContent.trim());
+
+  tabla.querySelectorAll('tbody tr').forEach((fila) => {
+    [...fila.children].forEach((celda, i) => {
+      if (!celda.hasAttribute('colspan') && titulos[i]) {
+        celda.setAttribute('data-label', titulos[i]);
+      }
+    });
+  });
+});
