@@ -1152,6 +1152,12 @@ h1, h2, h3, h4, .mono {
   flex-wrap: wrap;
 }
 
+.admin-nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 a.btn-blue,
 a.btn-danger {
   display: inline-block;
@@ -1539,4 +1545,122 @@ input[type="file"].wireframe-input { padding: 0.6rem; }
 .pagina-error-botones {
   justify-content: center;
   flex-wrap: wrap;
+}
+
+/* =========================================================
+   CELULAR Y TABLET: ajustes que solo aplican en pantallas chicas
+   (en la computadora no cambia nada)
+   ========================================================= */
+
+@media (max-width: 768px) {
+
+  .navbar {
+    padding: 0.75rem 1rem;
+  }
+
+  /* Menú del admin y de Mi cuenta: se abre con ☰ (Cerrar sesión queda a la vista) */
+  .admin-nav-links {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    gap: 0;
+    background: #060B18;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .admin-nav-links.abierto {
+    display: flex;
+  }
+
+  .admin-nav-links .btn-ghost-sm {
+    padding: 1rem 1.5rem;
+    border: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 0;
+  }
+
+  .logout-nombre {
+    display: none;
+  }
+
+  .nav-btn {
+    padding: 0.6rem 0.9rem;
+    font-size: 0.7rem;
+    white-space: nowrap;
+  }
+
+  /* Pasos de la reserva: los nombres van abajo de los círculos */
+  .stepper-header {
+    flex-wrap: wrap;
+  }
+
+  .step-labels {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    color: #9CA3AF;
+  }
+
+  .booking-card {
+    padding: 1.5rem 1rem;
+  }
+}
+
+@media (max-width: 600px) {
+
+  /* Tablas del admin: cada fila se muestra como una tarjeta */
+  .admin-table {
+    min-width: 0;
+  }
+
+  .admin-table thead {
+    display: none;
+  }
+
+  .admin-table,
+  .admin-table tbody,
+  .admin-table tr,
+  .admin-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .admin-table tr {
+    padding: 12px 16px;
+    border-bottom: 1px solid rgba(255,255,255,.10);
+  }
+
+  .admin-table tr:last-child {
+    border-bottom: none;
+  }
+
+  .admin-table td {
+    padding: 6px 0;
+    border-bottom: none;
+  }
+
+  /* Tablas con el título en la fila (ej: Mis datos en mi_cuenta.php) */
+  .admin-table tbody th {
+    display: block;
+    width: 100%;
+    padding: 0 0 2px;
+    background: none;
+    border-bottom: none;
+    font-size: 10px;
+  }
+
+  /* El título de la columna lo pone js/script.js en data-label */
+  .admin-table td[data-label]::before {
+    content: attr(data-label);
+    display: block;
+    margin-bottom: 2px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 10px;
+    color: #999;
+  }
 }

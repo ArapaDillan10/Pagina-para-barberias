@@ -58,17 +58,21 @@
 
       </a>
 
-      <div class="admin-nav-links">
+      <div class="admin-nav-actions">
 
-        <?php if ($_SESSION['rol'] === 'admin'): ?>
-          <a href="admin.php" class="btn-ghost-sm">
-            Panel admin
+        <nav class="admin-nav-links" id="adminNav">
+
+          <?php if ($_SESSION['rol'] === 'admin'): ?>
+            <a href="admin.php" class="btn-ghost-sm">
+              Panel admin
+            </a>
+          <?php endif; ?>
+
+          <a href="index.php" class="btn-ghost-sm">
+            ← Volver al sitio
           </a>
-        <?php endif; ?>
 
-        <a href="index.php" class="btn-ghost-sm">
-          ← Volver al sitio
-        </a>
+        </nav>
 
         <form method="post" action="logout.php" class="form-logout">
           <?php echo csrf_campo(); ?>
@@ -77,11 +81,20 @@
           </button>
         </form>
 
+        <button type="button" class="nav-toggle" id="adminNavToggle" aria-label="Abrir menú" aria-expanded="false">☰</button>
+
       </div>
 
     </div>
 
   </header>
+
+  <script>
+    document.getElementById('adminNavToggle').addEventListener('click', function () {
+      var abierto = document.getElementById('adminNav').classList.toggle('abierto');
+      this.setAttribute('aria-expanded', abierto);
+    });
+  </script>
 
   <main class="admin-dashboard">
 

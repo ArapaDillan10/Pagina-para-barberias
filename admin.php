@@ -414,13 +414,16 @@
 
           </div>
 
-          <a href="admin_mensajes.php" class="btn-blue admin-action">
+           <a href="admin_mensajes.php" class="btn-blue admin-action">
             Ver mensajes
           </a>
 
         </div>
 
 
+      </div>
+
+    </section>
 
     <!-- =========================================================
          RESERVAS RECIENTES
