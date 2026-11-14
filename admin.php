@@ -15,6 +15,7 @@
   $turnos_pendientes = (int) $pdo->query("SELECT COUNT(*) FROM turnos WHERE estado = 'pendiente' AND fecha >= CURDATE()")->fetchColumn();
   $total_barberos = (int) $pdo->query('SELECT COUNT(*) FROM barberos WHERE estado = 1')->fetchColumn();
   $mensajes_sin_leer = (int) $pdo->query('SELECT COUNT(*) FROM mensajes WHERE leido = 0')->fetchColumn();
+    $resenas_nuevas = (int) $pdo->query('SELECT COUNT(*) FROM resenas WHERE vista = 0')->fetchColumn();
 
   $proximos_turnos = $pdo->query(
     "SELECT t.fecha, t.hora, t.estado, u.nombre AS cliente, b.nombre AS barbero,
@@ -372,17 +373,15 @@
               Consultá las opiniones y comentarios de los clientes.
             </p>
 
-            <span class="admin-card-info">
-              1 reseña nueva
+           <span class="admin-card-info">
+              <?php echo $resenas_nuevas; ?> <?php echo $resenas_nuevas === 1 ? 'reseña nueva' : 'reseñas nuevas'; ?>
             </span>
 
           </div>
 
-          <button
-            type="button"
-            class="btn-blue admin-action">
+          <a href="admin_resenas.php" class="btn-blue admin-action">
             Ver reseñas
-          </button>
+          </a>
 
         </div>
 
