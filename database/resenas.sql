@@ -4,7 +4,6 @@
 -- vista = 0 marca las que el admin todavía no vio (aviso en el panel).
 -- Ejecutar UNA vez en phpMyAdmin (local y hosting) ANTES de subir los archivos.
 -- =========================================================
-
 CREATE TABLE IF NOT EXISTS resenas (
   id          INT AUTO_INCREMENT PRIMARY KEY,
   usuario_id  INT          NOT NULL,
@@ -14,10 +13,7 @@ CREATE TABLE IF NOT EXISTS resenas (
   vista       TINYINT      NOT NULL DEFAULT 0,
   created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT chk_resenas_puntaje CHECK (puntaje BETWEEN 1 AND 5),
-  CONSTRAINT fk_resenas_usuario
-    FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
-    ON UPDATE CASCADE ON DELETE CASCADE,
   INDEX idx_resenas_visible (visible, created_at),
   INDEX idx_resenas_vista (vista),
   INDEX idx_resenas_usuario (usuario_id, created_at)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
