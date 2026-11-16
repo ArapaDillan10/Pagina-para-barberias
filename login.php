@@ -5,7 +5,7 @@
   require_once __DIR__ . '/includes/funciones.php';
 
   const MAX_INTENTOS     = 5;
-  const MINUTOS_BLOQUEO  = 15;
+  const MINUTOS_BLOQUEO  = 2;
 
   header('Cache-Control: no-store, no-cache, must-revalidate');
 
