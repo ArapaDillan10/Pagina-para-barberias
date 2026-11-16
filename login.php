@@ -89,8 +89,12 @@
   $msg   = filter_input(INPUT_GET, 'msg', FILTER_UNSAFE_RAW) ?? '';
   $aviso = $mensajes[$msg] ?? '';
 
-  if (!$error && (filter_input(INPUT_GET, 'error', FILTER_UNSAFE_RAW) ?? '') === 'acceso_denegado') {
+  $error_get = filter_input(INPUT_GET, 'error', FILTER_UNSAFE_RAW) ?? '';
+
+  if (!$error && $error_get === 'acceso_denegado') {
     $error = 'Tenés que iniciar sesión para ver esa página.';
+  } elseif (!$error && $error_get === 'cuenta_inactiva') {
+    $error = 'Tu cuenta fue dada de baja. Si creés que es un error, escribinos desde Contacto.';
   }
 
   include('includes/header.php');

@@ -45,6 +45,10 @@
             Turnos
           </a>
 
+          <a href="admin_usuarios.php" class="btn-ghost-sm">
+            Usuarios
+          </a>
+
           <a href="admin_mensajes.php" class="btn-ghost-sm">
             Mensajes
           </a>
