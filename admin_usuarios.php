@@ -131,7 +131,9 @@
                     <small>Es tu cuenta</small>
                   <?php else: ?>
                     <div class="form-inline">
-                      <form method="post" action="admin_usuarios.php" onsubmit="return confirm('<?php echo $u['rol'] === 'admin' ? '¿Sacarle el rol de admin a esta cuenta?' : '¿Darle el rol de admin a esta cuenta? Va a poder entrar al panel.'; ?>');">
+                      <form method="post" action="admin_usuarios.php"
+                        data-confirmar="<?php echo $u['rol'] === 'admin' ? '¿Sacarle el rol de admin a ' . e($u['nombre']) . '? Ya no va a poder entrar al panel.' : '¿Darle el rol de admin a ' . e($u['nombre']) . '? Va a poder entrar al panel.'; ?>"
+                        data-confirmar-boton="<?php echo $u['rol'] === 'admin' ? 'Sí, hacer usuario' : 'Sí, hacer admin'; ?>">
                         <?php echo csrf_campo(); ?>
                         <input type="hidden" name="usuario_id" value="<?php echo (int) $u['id']; ?>">
                         <input type="hidden" name="accion" value="<?php echo $u['rol'] === 'admin' ? 'hacer_usuario' : 'hacer_admin'; ?>">
@@ -139,7 +141,9 @@
                       </form>
 
                       <?php if ($u['estado']): ?>
-                        <form method="post" action="admin_usuarios.php" onsubmit="return confirm('¿Eliminar esta cuenta? Si tiene turnos o reseñas, se desactiva en vez de borrarse.');">
+                        <form method="post" action="admin_usuarios.php"
+                          data-confirmar="¿Eliminar la cuenta de <?php echo e($u['nombre']); ?>? Si tiene turnos o reseñas, se desactiva en vez de borrarse."
+                          data-confirmar-boton="Sí, eliminar" data-confirmar-peligro>
                           <?php echo csrf_campo(); ?>
                           <input type="hidden" name="usuario_id" value="<?php echo (int) $u['id']; ?>">
                           <input type="hidden" name="accion" value="eliminar">

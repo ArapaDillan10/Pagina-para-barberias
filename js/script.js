@@ -295,3 +295,62 @@ document.querySelectorAll('.admin-table').forEach((tabla) => {
     });
   });
 });
+
+
+// Confirmaciones con el diseño del sitio en vez del confirm() del navegador.
+// Uso: <form data-confirmar="¿Seguro?" data-confirmar-boton="Sí, eliminar" data-confirmar-peligro>
+const formsConfirmar = document.querySelectorAll('form[data-confirmar]');
+
+if (formsConfirmar.length) {
+  const modal = document.createElement('div');
+  modal.className = 'modal-confirmar';
+  modal.hidden = true;
+  modal.innerHTML =
+    '<div class="modal-confirmar-caja" role="dialog" aria-modal="true" aria-labelledby="modalConfirmarTitulo">' +
+      '<h3 id="modalConfirmarTitulo">¿Estás seguro?</h3>' +
+      '<p></p>' +
+      '<div class="modal-confirmar-botones">' +
+        '<button type="button" class="btn-ghost-sm" data-cancelar>Cancelar</button>' +
+        '<button type="button" data-aceptar></button>' +
+      '</div>' +
+    '</div>';
+  document.body.appendChild(modal);
+
+  const texto   = modal.querySelector('p');
+  const aceptar = modal.querySelector('[data-aceptar]');
+  let formPendiente = null;
+
+  const cerrar = () => {
+    modal.hidden = true;
+    formPendiente = null;
+  };
+
+  formsConfirmar.forEach((form) => {
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      formPendiente = form;
+      texto.textContent   = form.dataset.confirmar;
+      aceptar.textContent = form.dataset.confirmarBoton || 'Aceptar';
+      aceptar.className   = form.hasAttribute('data-confirmar-peligro') ? 'btn-danger' : 'btn-blue';
+      modal.hidden = false;
+      aceptar.focus();
+    });
+  });
+
+  aceptar.addEventListener('click', () => {
+    const form = formPendiente;
+    cerrar();
+    form.submit();
+  });
+
+  modal.querySelector('[data-cancelar]').addEventListener('click', cerrar);
+
+  // Clic afuera de la caja o tecla Esc: cancela
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) cerrar();
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !modal.hidden) cerrar();
+  });
+}
