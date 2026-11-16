@@ -39,7 +39,7 @@
   <?php endif; ?>
 
   <!-- CSS PRINCIPAL -->
-  <link rel="stylesheet" href="./css/styles.css?v=7" />
+  <link rel="stylesheet" href="./css/styles.css?v=8" />
 
   <!-- FUENTES -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
