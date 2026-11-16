@@ -3,6 +3,7 @@
   //   require_once __DIR__ . '/includes/auth_guard.php';   -> cualquier usuario logueado
   //   verificarRol('admin');                               -> además, solo administradores
   require_once __DIR__ . '/sesion.php';
+  require_once __DIR__ . '/../config/conexion.php';
 
   const MINUTOS_INACTIVIDAD = 30;
 
@@ -23,6 +24,22 @@
     }
 
     $_SESSION['ultima_actividad'] = time();
+
+    // El rol y el estado se leen de la base en cada página: si el admin cambia el rol
+    // o desactiva la cuenta, toma al instante aunque la sesión esté abierta.
+    global $pdo;
+    $stmt = $pdo->prepare('SELECT nombre, rol FROM usuarios WHERE id = :id AND estado = 1');
+    $stmt->execute([':id' => $_SESSION['usuario_id']]);
+    $actual = $stmt->fetch();
+
+    if (!$actual) {
+      cerrar_sesion();
+      header('Location: login.php?error=cuenta_inactiva');
+      exit;
+    }
+
+    $_SESSION['rol']            = $actual['rol'];
+    $_SESSION['usuario_nombre'] = $actual['nombre'];
   }
 
   function verificarRol($rol) {

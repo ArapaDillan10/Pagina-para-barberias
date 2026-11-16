@@ -418,6 +418,39 @@
           </a>
 
         </div>
+      
+
+        <!-- =====================================================
+             USUARIOS
+             ===================================================== -->
+
+        <div class="admin-card">
+
+          <div class="admin-card-icon">
+            👥
+          </div>
+
+          <div class="admin-card-content">
+
+            <h3>
+              Usuarios
+            </h3>
+
+            <p>
+              Mirá las cuentas, cambiales el rol o dalas de baja.
+            </p>
+
+            <span class="admin-card-info">
+              <?php echo $total_clientes; ?> clientes
+            </span>
+
+          </div>
+
+          <a href="admin_usuarios.php" class="btn-blue admin-action">
+            Ver usuarios
+          </a>
+
+        </div>
 
 
       </div>
