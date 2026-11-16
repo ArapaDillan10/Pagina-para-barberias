@@ -27,6 +27,7 @@
   $sin_permiso = (filter_input(INPUT_GET, 'error', FILTER_UNSAFE_RAW) ?? '') === 'sin_permiso';
 
   $mensajes = [
+    'bienvenido'   => ['exito', '¡Listo! Confirmaste tu email y tu cuenta quedó creada.'],
     'reservado'    => ['exito', '¡Listo! Tu turno quedó reservado. Te esperamos.'],
     'cancelado'    => ['exito', 'Cancelaste el turno.'],
     'no_cancelado' => ['error', 'Ese turno ya no se puede cancelar.'],
